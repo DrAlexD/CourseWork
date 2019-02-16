@@ -2,70 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Students</title>
+    <title>Professors</title>
     <script>
         "use strict";
         window.onload = async function () {
             try {
 
-                let getAllStudents = async function () {
-                    let response = await fetch(`/students/all.json`);
+                let getAllProfessors = async function () {
+                    let response = await fetch(`/professors/all.json`);
                     let resText = await response.json();
 
-                    document.getElementById("students").innerHTML = "";
+                    document.getElementById("professors").innerHTML = "";
                     for (let i = 0; i < resText.length; i++) {
-                        document.getElementById("students").innerHTML += "<tr>\n" +
+                        document.getElementById("professors").innerHTML += "<tr>\n" +
                             `                <td>${resText[i].firstName}</td>\n` +
                             `               <td>${resText[i].secondName}</td>\n` +
-                            `                <td>${resText[i].group}</td>\n` +
-                            "                <td><input type=\"button\" value=\"Student page\" class=\"url\"\n" +
-                            `                           onclick='window.location.href = "/student/${resText[i].studentId}";'/></td>\n` +
+                            "                <td><input type=\"button\" value=\"Professor page\" class=\"url\"\n" +
+                            `                           onclick='window.location.href = "/professor/${resText[i].professorId}";'/></td>\n` +
                             "            </tr>\n";
                     }
                 };
 
-                await getAllStudents();
+                await getAllProfessors();
 
                 let searchButton = document.getElementById('searchButton');
-                let allStudentsButton = document.getElementById('allStudentsButton');
+                let allProfessorsButton = document.getElementById('allProfessorsButton');
                 let inputs = document.getElementsByClassName('text-field');
 
                 searchButton.onclick = async function () {
-                    let studentData = {
+                    let professorData = {
                         firstName: inputs[0].value,
                         secondName: inputs[1].value,
-                        studentGroup: inputs[2].value
                     };
 
                     let options = {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(studentData)
+                        body: JSON.stringify(professorData)
                     };
 
-                    let response = await fetch('/students', options);
+                    let response = await fetch('/professors', options);
                     let resText = await response.json();
 
                     if (response.ok) {
-                        document.getElementById("students").innerHTML = "";
+                        document.getElementById("professors").innerHTML = "";
                         for (let i = 0; i < resText.length; i++) {
-                            document.getElementById("students").innerHTML += "<tr>\n" +
+                            document.getElementById("professors").innerHTML += "<tr>\n" +
                                 `           <td>${resText[i].firstName}</td>\n` +
                                 `            <td>${resText[i].secondName}</td>\n` +
-                                `            <td>${resText[i].group}</td>\n` +
-                                `            <td><input type="button" value="Student page" class="url"/></td>\n` +
+                                `            <td><input type="button" value="Professor page" class="url"/></td>\n` +
                                 "        </tr>";
-                            let studentURLButton = (document.getElementsByClassName("url"))[i];
-                            studentURLButton.onclick = function () {
-                                window.location.href = `/student/${resText[i].studentId}`;
+                            let professorURLButton = (document.getElementsByClassName("url"))[i];
+                            professorURLButton.onclick = function () {
+                                window.location.href = `/professor/${resText[i].professorId}`;
                             };
                         }
                     } else
                         alert(resText);
                 };
 
-                allStudentsButton.onclick = async function () {
-                    await getAllStudents();
+                allProfessorsButton.onclick = async function () {
+                    await getAllProfessors();
                 };
             } catch (err) {
                 alert(err);
@@ -76,7 +73,7 @@
 
 <body>
 <div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Students </h2>
+    <h2> Professors </h2>
     <div class="form-group">
         <div class="form-group" style="margin-bottom: 5px">
             <label for="searchFirstName">FirstName</label> <input autocomplete="off" autofocus class="text-field"
@@ -88,25 +85,19 @@
                                                                     id="searchSecondName"
                                                                     style="margin-right: 82px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <label for="searchStudentGroup">Group</label> <input autocomplete="off" class="text-field"
-                                                                 id="searchStudentGroup"
-                                                                 style="margin-right: 38px" type="text"/>
-        </div>
         <div class="form-group" style="margin-bottom: 30px">
             <input class="btn" id="searchButton" type="button" value="Search"/>
-            <input class="btn" id="allStudentsButton" type="button" value="All students"/>
+            <input class="btn" id="allProfessorsButton" type="button" value="All professors"/>
         </div>
-        <table bgcolor="#f0f8ff" id="students-table" style="text-align:center" width="400px">
+        <table bgcolor="#f0f8ff" id="professors-table" style="text-align:center" width="300px">
             <thead>
             <tr>
                 <th>FirstName</th>
                 <th>SecondName</th>
-                <th>Group</th>
                 <th>Page</th>
             </tr>
             </thead>
-            <tbody id="students">
+            <tbody id="professors">
             </tbody>
         </table>
     </div>

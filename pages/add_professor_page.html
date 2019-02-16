@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add professor</title>
+    <script>
+        "use strict";
+        window.onload = function () {
+            let addProfessorButton = document.getElementById('addProfessorButton');
+            let inputs = document.getElementsByTagName('input');
+            let logOut = document.getElementById('logOut');
+
+            addProfessorButton.onclick = async function () {
+                try {
+                    let professorData = {
+                        firstName: inputs[0].value,
+                        secondName: inputs[1].value,
+                    };
+
+                    let options = {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(professorData)
+                    };
+
+                    let response = await fetch('/add/professor', options);
+                    let resText = await response.json();
+
+                    if (response.ok)
+                        window.location.href = `/professor/${resText}`;
+                    else
+                        alert(resText);
+                } catch (err) {
+                    alert(err);
+                }
+            };
+
+            logOut.onclick = async function () {
+                try {
+                    await fetch('/logout');
+                    window.location.href = '/login';
+                } catch (err) {
+                    alert(err);
+                }
+            };
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Add professor </h2>
+    <form name="add professor">
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="firstName">FirstName</label> <input autocomplete="off" autofocus class="text-field"
+                                                            id="firstName" style="margin-right: 70px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="secondName">SecondName</label> <input autocomplete="off" class="text-field" id="secondName"
+                                                              style="margin-right: 88px" type="text"/>
+        </div>
+        <div class="form-group">
+            <input class="btn btn-lg btn-success" id="addProfessorButton" type="button" value="Add"/>
+            <input class="btn btn-lg btn-danger" id="logOut" type="button" value="Log out"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>

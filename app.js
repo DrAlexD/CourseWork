@@ -171,7 +171,46 @@ app.post('/add/student', (req, res) => {
     }
 });
 
+app.get('/add/professor', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        console.log(`AddProfessor page, user: ${req.session.username}`);
+        res.sendFile(path.join(__filename, '../pages/add_professor_page.html'));
+    } else {
+        console.log(`AddProfessor page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
 
+app.post('/add/professor', (req, res) => {
+    if (req.body.firstName !== "" && req.body.secondName !== "") {
+        let log = `${req.body.firstName} ${req.body.secondName}`.replace(" ", "").toLowerCase();
+        let pas = `123456`;
+        con.query("INSERT INTO professor (`firstName`, `secondName`, `login`, `password`) " + `VALUES ('${req.body.firstName}', '${req.body.secondName}', '${log}', '${pas}')`,
+            function (err1) {
+                if (err1) {
+                    console.error(err1);
+                    res.status(500).send(JSON.stringify("Copy of existing professor"));
+                } else {
+                    console.log(`Success added professor: ${log}`);
+
+                    con.query(`SELECT professorId FROM professor WHERE login='${log}'`,
+                        function (err2, result) {
+                            if (err2)
+                                console.error(err2);
+                            else {
+                                res.status(200).send(`${result[0].professorId}`);
+                                res.end();
+                            }
+                        });
+                }
+            }
+        );
+    } else {
+        res.status(404).send(JSON.stringify("Undefined firstName or secondName"));
+        console.log("Undefined firstName or secondName");
+    }
+});
 app.get('/student/:id', (req, res) => {
     if (typeof req.session.username != 'undefined') {
         con.query(`SELECT * FROM student WHERE studentId='${req.params.id}'`,
@@ -207,6 +246,52 @@ app.get('/student/:id/info.json', (req, res) => {
                         res.send(JSON.stringify(result[0]));
                     } else {
                         console.log(`Not found student: ${result[0].login}`);
+                        res.redirect('/actions');
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+app.get('/professor/:id', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM professor WHERE professorId='${req.params.id}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.sendFile(path.join(__filename, '../pages/professor_page.html'));
+                        console.log(`Professor page, professor: ${result[0].login}`);
+                    } else {
+                        console.log(`Not found professor`);
+                        res.redirect('/actions');
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Professor page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+app.get('/professor/:id/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM professor WHERE professorId='${req.params.id}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.send(JSON.stringify(result[0]));
+                    } else {
+                        console.log(`Not found professor: ${result[0].login}`);
                         res.redirect('/actions');
                         res.end();
                     }
@@ -375,4 +460,92 @@ app.post('/students', (req, res) => {
     }
 });
 
+app.get('/professors', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        res.sendFile(path.join(__filename, '../pages/professors_page.html'));
+        console.log(`Professors page, user: ${req.session.username}`);
+    } else {
+        console.log(`Professors page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+app.get('/professors/all.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM professor`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.send(JSON.stringify(result));
+                    } else {
+                        console.log(`Not found professors`);
+                        res.redirect('/actions');
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+app.post('/professors', (req, res) => {
+    if (req.body.firstName !== "") {
+        if (req.body.secondName !== "") {
+            con.query(`SELECT * FROM professor WHERE firstName='${req.body.firstName}' AND secondName='${req.body.secondName}'`,
+                function (err, result) {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        if (typeof result[0] != 'undefined') {
+                            res.status(200).send(JSON.stringify(result));
+                        } else {
+                            console.log(`Not found professors`);
+                            res.status(404).send(JSON.stringify(`Not found professors`));
+                        }
+                    }
+                }
+            );
+        } else {
+            con.query(`SELECT * FROM professor WHERE firstName='${req.body.firstName}'`,
+                function (err, result) {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        if (typeof result[0] != 'undefined') {
+                            res.status(200).send(JSON.stringify(result));
+                        } else {
+                            console.log(`Not found professors`);
+                            res.status(404).send(JSON.stringify(`Not found professors`));
+                        }
+                    }
+                }
+            );
+        }
+    } else {
+        if (req.body.secondName !== "") {
+            con.query(`SELECT * FROM professor WHERE secondName='${req.body.secondName}'`,
+                function (err, result) {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        if (typeof result[0] != 'undefined') {
+                            res.status(200).send(JSON.stringify(result));
+                        } else {
+                            console.log(`Not found professors`);
+                            res.status(404).send(JSON.stringify(`Not found professors`));
+                        }
+                    }
+                }
+            );
+        } else {
+            res.status(404).send(JSON.stringify("Undefined firstName and secondName"));
+            console.log("Undefined firstName and secondName");
+        }
+    }
+});
 app.listen(port, () => console.log(`Server has been started on port ${port}!`));
