@@ -5,6 +5,16 @@
     <title>Student</title>
     <script>
         "use strict";
+        String.prototype.hashCode = function () {
+            let hash = 0;
+            for (let i = 0; i < this.length; i++) {
+                let character = this.charCodeAt(i);
+                hash = ((hash << 5) - hash) + character;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return hash;
+        };
+
         window.onload = async function () {
             try {
                 let loc = window.location.href.split("/");
@@ -16,6 +26,27 @@
                 document.getElementById("firstName").innerText = resText.firstName;
                 document.getElementById("secondName").innerText = resText.secondName;
                 document.getElementById("group").innerText = resText.group;
+
+                let addCourseWorkButton = document.getElementById('addCourseWorkButton');
+                addCourseWorkButton.onclick = function () {
+                    window.location.href = `/student/${locId}/add/coursework`;
+                };
+
+                response = await fetch(`/student/${locId}/courseworks/info.json`);
+
+                if (response.ok) {
+                    resText = await response.json();
+                    let courseWorksButtons = document.getElementById('courseWorks');
+                    courseWorksButtons.hidden = false;
+                    courseWorksButtons.innerHTML = "";
+                    for (let i = 0; i < resText.length; i++) {
+                        courseWorksButtons.innerHTML += "<div class='form-group' style='margin-bottom: 5px'>\n" +
+                            `                <label>CourseWork</label> <input type='button' value='${resText[i].title}'` +
+                            ` class='courseWorkButton'` +
+                            ` onclick="window.location.href = '/student/${locId}/coursework/${resText[i].title.hashCode()}'"/>\n` +
+                            "            </div>";
+                    }
+                }
             } catch (err) {
                 alert(err);
             }
@@ -28,13 +59,15 @@
     <h2> Student </h2>
     <form name="student">
         <div class="form-group" style="margin-bottom: 5px">
-            <label>FirstName</label> <label id="firstName"></label>
+            <label id="firstName"></label> <label id="secondName"></label>
         </div>
         <div class="form-group" style="margin-bottom: 5px">
-            <label>SecondName</label> <label id="secondName"></label>
+            <label id="group"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <label>Group</label> <label id="group"></label>
+        <div class="form-group" id="courseWorks" hidden>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <input class="btn btn-lg btn-success" id="addCourseWorkButton" value="Add courseWork" type="button"/>
         </div>
     </form>
 </div>

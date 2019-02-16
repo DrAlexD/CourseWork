@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add courseWork</title>
+    <script>
+        "use strict";
+        window.onload = function () {
+            let addCourseWorkButton = document.getElementById('addCourseWorkButton');
+            let inputs = document.getElementsByTagName('input');
+            let logOut = document.getElementById('logOut');
+
+            let loc = window.location.href.split("/");
+            let locId = loc[loc.length - 3];
+
+            addCourseWorkButton.onclick = async function () {
+                try {
+                    let courseWorkData = {
+                        title: inputs[0].value,
+                        year: inputs[1].value,
+                        headFirstName: inputs[2].value,
+                        headSecondName: inputs[3].value
+                    };
+
+                    let options = {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(courseWorkData)
+                    };
+
+                    let response = await fetch(`/student/${locId}/add/coursework`, options);
+                    let resText = await response.json();
+                    alert(resText);
+                    /*
+                    if (response.ok)
+                        window.location.href = `/student/${locId}/courseWork/${resText}`;
+                    else
+                        alert(resText);
+                        */
+                } catch (err) {
+                    alert(err);
+                }
+            };
+
+            logOut.onclick = async function () {
+                try {
+                    await fetch('/logout');
+                    window.location.href = '/login';
+                } catch (err) {
+                    alert(err);
+                }
+            };
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Add courseWork </h2>
+    <form name="add courseWork">
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="title">Title</label> <input autocomplete="off" autofocus class="text-field" id="title"
+                                                    style="margin-right: 30px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="year">Year</label> <input autocomplete="off" class="text-field" id="year"
+                                                  style="margin-right: 30px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="headFirstName">HeadFirstName</label> <input autocomplete="off" class="text-field"
+                                                                    id="headFirstName" style="margin-right: 100px"
+                                                                    type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px">
+            <label for="headSecondName">HeadSecondName</label> <input autocomplete="off" class="text-field"
+                                                                      id="headSecondName" style="margin-right: 117px"
+                                                                      type="text"/>
+        </div>
+        <div class="form-group">
+            <input class="btn btn-lg btn-success" id="addCourseWorkButton" type="button" value="Add"/>
+            <input class="btn btn-lg btn-danger" id="logOut" type="button" value="Log out"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>

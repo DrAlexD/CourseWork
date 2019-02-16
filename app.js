@@ -211,6 +211,7 @@ app.post('/add/professor', (req, res) => {
         console.log("Undefined firstName or secondName");
     }
 });
+
 app.get('/student/:id', (req, res) => {
     if (typeof req.session.username != 'undefined') {
         con.query(`SELECT * FROM student WHERE studentId='${req.params.id}'`,
@@ -548,4 +549,135 @@ app.post('/professors', (req, res) => {
         }
     }
 });
+
+app.get('/student/:id/courseworks/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.status(200).send(JSON.stringify(result));
+                    } else {
+                        res.status(404).send();
+                    }
+                }
+            });
+    } else {
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+app.get('/student/:id/add/coursework', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        console.log(`AddCourseWork page, user: ${req.session.username}`);
+        res.sendFile(path.join(__filename, '../pages/add_coursework_page.html'));
+    } else {
+        console.log(`AddCourseWork page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+app.post('/student/:id/add/coursework', (req, res) => {
+    if (req.body.title !== "" && req.body.year !== "" && req.body.headFirstName !== "" && req.body.headSecondName !== "") {
+        con.query("INSERT INTO coursework (`studentId`, `title`, `year`, `headFirstName`, `headSecondName`) "
+            + `VALUES ('${req.params.id}','${req.body.title}', '${req.body.year}', '${req.body.headFirstName}', '${req.body.headSecondName}')`,
+            function (err1) {
+                if (err1) {
+                    console.error(err1);
+                    res.status(500).send(JSON.stringify("Copy of existing courseWork"));
+                } else {
+                    console.log(`Success added courseWork: ${req.body.title}`);
+
+                    con.query(`SELECT * FROM coursework WHERE title='${req.body.title}'`,
+                        function (err2, result) {
+                            if (err2)
+                                console.error(err2);
+                            else {
+                                console.log(`Success added courseWork: ${result[0].title}`);
+                                res.status(200).send(JSON.stringify(result[0].title.hashCode()));
+                                res.end();
+                            }
+                        });
+                }
+            }
+        );
+    } else {
+        res.status(404).send(JSON.stringify("Undefined title"));
+        console.log("Undefined title");
+    }
+});
+//3169710
+app.get('/student/:id/coursework/:code', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        let i = 0;
+                        for (; i < result.length; i++) {
+                            if (result[i].title.hashCode() == req.params.code) {
+                                console.log(`CourseWork page, courseWork: ${result[i].title}`);
+                                res.sendFile(path.join(__filename, '../pages/coursework_page.html'));
+                                break;
+                            }
+                        }
+                        if (i === result.length) {
+                            console.log(`Not found courseWork`);
+                            res.redirect(`/student/${req.params.id}`);
+                            res.end();
+                        }
+                    } else {
+                        console.log(`Not found courseWorks`);
+                        res.redirect(`/student/${req.params.id}`);
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Professor page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+app.get('/student/:id/coursework/:code/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        let i = 0;
+                        for (; i < result.length; i++) {
+                            if (result[i].title.hashCode() == req.params.code) {
+                                res.send(JSON.stringify(result[i]));
+                                break;
+                            }
+                        }
+                        if (i === result.length) {
+                            console.log(`Not found courseWork`);
+                            res.redirect(`/student/${req.params.id}`);
+                            res.end();
+                        }
+                    } else {
+                        console.log(`Not found courseWork`);
+                        res.redirect(`/student/${req.params.id}`);
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Professor page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
 app.listen(port, () => console.log(`Server has been started on port ${port}!`));

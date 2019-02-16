@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Professor</title>
+    <script>
+        "use strict";
+        window.onload = async function () {
+            try {
+
+                let loc = window.location.href.split("/");
+                let locId = loc[loc.length - 3];
+                let locCode = loc[loc.length - 1];
+                let response = await fetch(`/student/${locId}/coursework/${locCode}/info.json`);
+                let resText = await response.json();
+
+                document.getElementById("title").innerText = resText.title;
+                document.getElementById("year").innerText = resText.year;
+                document.getElementById("headFirstName").innerText = resText.headFirstName;
+                document.getElementById("headSecondName").innerText = resText.headSecondName;
+
+                if (resText.taskText !== null) {
+                    document.getElementById("taskText").hidden = false;
+                    document.getElementsByClassName("taskText")[0].innerHTML = resText.taskText;
+                }
+
+                if (resText.isConfirmedTaskText !== null) {
+                    document.getElementById("isConfirmedTaskText").hidden = false;
+                    document.getElementsByClassName("isConfirmedTaskText")[0].innerHTML = resText.isConfirmedTaskText;
+                }
+
+                if (resText.currentNote !== null) {
+                    document.getElementById("currentNote").hidden = false;
+                    document.getElementsByClassName("currentNote")[0].innerHTML = resText.currentNote;
+                }
+
+                if (resText.linkToCode !== null) {
+                    document.getElementById("linkToCode").hidden = false;
+                    document.getElementsByClassName("linkToCode")[0].innerHTML = resText.linkToCode;
+                }
+
+                if (resText.linkToPresentation !== null) {
+                    document.getElementById("linkToPresentation").hidden = false;
+                    document.getElementsByClassName("linkToPresentation")[0].innerHTML = resText.linkToPresentation;
+                }
+
+                if (resText.admittanceToProtectionCourseWork !== null) {
+                    document.getElementById("admittanceToProtectionCourseWork").hidden = false;
+                    document.getElementsByClassName("admittanceToProtectionCourseWork")[0].innerHTML = resText.admittanceToProtectionCourseWork;
+                }
+
+                if (resText.finalEvaluation !== null) {
+                    document.getElementById("finalEvaluation").hidden = false;
+                    document.getElementsByClassName("finalEvaluation")[0].innerHTML = resText.finalEvaluation;
+                }
+
+            } catch (err) {
+                alert(err);
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> CourseWork </h2>
+    <form name="courseWork">
+        <div class="form-group" style="margin-bottom: 5px">
+            <label id="title"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label id="year"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label>Руководитель:</label> <label id="headFirstName"></label> <label id="headSecondName"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px" id="taskText" hidden>
+            <label class="taskText"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px" id="isConfirmedTaskText" hidden>
+            <label class="isConfirmedTaskText"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px" id="currentNote" hidden>
+            <label class="currentNote"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px" id="linkToCode" hidden>
+            <label class="linkToCode"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px" id="linkToPresentation" hidden>
+            <label class="linkToPresentation"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px" id="admittanceToProtectionCourseWork" hidden>
+            <label class="admittanceToProtectionCourseWork"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px" id="finalEvaluation" hidden>
+            <label class="finalEvaluation"></label>
+        </div>
+    </form>
+</div>
+</body>
+</html>

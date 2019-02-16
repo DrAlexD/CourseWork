@@ -55,6 +55,7 @@
                                 `            <td>${resText[i].group}</td>\n` +
                                 `            <td><input type="button" value="Student page" class="url"/></td>\n` +
                                 "        </tr>";
+
                             let studentURLButton = (document.getElementsByClassName("url"))[i];
                             studentURLButton.onclick = function () {
                                 window.location.href = `/student/${resText[i].studentId}`;
