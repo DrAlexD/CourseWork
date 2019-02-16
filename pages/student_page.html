@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student</title>
+    <script>
+        "use strict";
+        window.onload = async function () {
+            try {
+                let loc = window.location.href.split("/");
+                let locId = loc[loc.length - 1];
+
+                let response = await fetch(`/student/${locId}/info.json`);
+                let resText = await response.json();
+
+                document.getElementById("firstName").innerText = resText.firstName;
+                document.getElementById("secondName").innerText = resText.secondName;
+                document.getElementById("group").innerText = resText.group;
+            } catch (err) {
+                alert(err);
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Student </h2>
+    <form name="student">
+        <div class="form-group" style="margin-bottom: 5px">
+            <label>FirstName</label> <label id="firstName"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label>SecondName</label> <label id="secondName"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px">
+            <label>Group</label> <label id="group"></label>
+        </div>
+    </form>
+</div>
+</body>
+</html>

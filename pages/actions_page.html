@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Actions</title>
+    <script>
+        "use strict";
+        window.onload = function () {
+            let logOut = document.getElementById('logOut');
+
+            logOut.onclick = async function () {
+                try {
+                    await fetch('/logout');
+                    window.location.href = '/login';
+                } catch (err) {
+                    alert(err);
+                }
+            };
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Actions </h2>
+    <form name="actions">
+        <div class="form-group" style="margin-bottom: 15px">
+            <input class="btn btn-lg btn-success" id="addStudentPageButton"
+                   onclick="window.location.href = '/add/student';" type="button"
+                   value="Add student"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px">
+            <input class="btn btn-lg btn-danger" id="studentsPageButton" onclick="window.location.href = '/students';"
+                   type="button"
+                   value="Students"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px">
+            <input class="btn btn-lg btn-danger" id="logOut" type="button" value="Log out"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>

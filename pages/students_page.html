@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Students</title>
+    <script>
+        "use strict";
+        window.onload = async function () {
+            try {
+
+                let getAllStudents = async function () {
+                    let response = await fetch(`/students/all.json`);
+                    let resText = await response.json();
+
+                    document.getElementById("students").innerHTML = "";
+                    for (let i = 0; i < resText.length; i++) {
+                        document.getElementById("students").innerHTML += "<tr>\n" +
+                            `                <td>${resText[i].firstName}</td>\n` +
+                            `               <td>${resText[i].secondName}</td>\n` +
+                            `                <td>${resText[i].group}</td>\n` +
+                            "                <td><input type=\"button\" value=\"Student page\" class=\"url\"\n" +
+                            `                           onclick='window.location.href = "/student/${resText[i].studentId}";'/></td>\n` +
+                            "            </tr>\n";
+                    }
+                };
+
+                await getAllStudents();
+
+                let searchButton = document.getElementById('searchButton');
+                let allStudentsButton = document.getElementById('allStudentsButton');
+                let inputs = document.getElementsByClassName('text-field');
+
+                searchButton.onclick = async function () {
+                    let studentData = {
+                        firstName: inputs[0].value,
+                        secondName: inputs[1].value,
+                        studentGroup: inputs[2].value
+                    };
+
+                    let options = {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(studentData)
+                    };
+
+                    let response = await fetch('/students', options);
+                    let resText = await response.json();
+
+                    if (response.ok) {
+                        document.getElementById("students").innerHTML = "";
+                        for (let i = 0; i < resText.length; i++) {
+                            document.getElementById("students").innerHTML += "<tr>\n" +
+                                `           <td>${resText[i].firstName}</td>\n` +
+                                `            <td>${resText[i].secondName}</td>\n` +
+                                `            <td>${resText[i].group}</td>\n` +
+                                `            <td><input type="button" value="Student page" class="url"/></td>\n` +
+                                "        </tr>";
+                            let studentURLButton = (document.getElementsByClassName("url"))[i];
+                            studentURLButton.onclick = function () {
+                                window.location.href = `/student/${resText[i].studentId}`;
+                            };
+                        }
+                    } else
+                        alert(resText);
+                };
+
+                allStudentsButton.onclick = async function () {
+                    await getAllStudents();
+                };
+            } catch (err) {
+                alert(err);
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Students </h2>
+    <div class="form-group">
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="searchFirstName">FirstName</label> <input autocomplete="off" autofocus class="text-field"
+                                                                  id="searchFirstName" style="margin-right: 65px"
+                                                                  type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="searchSecondName">SecondName</label> <input autocomplete="off" class="text-field"
+                                                                    id="searchSecondName"
+                                                                    style="margin-right: 82px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px">
+            <label for="searchStudentGroup">Group</label> <input autocomplete="off" class="text-field"
+                                                                 id="searchStudentGroup"
+                                                                 style="margin-right: 38px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 30px">
+            <input class="btn" id="searchButton" type="button" value="Search"/>
+            <input class="btn" id="allStudentsButton" type="button" value="All students"/>
+        </div>
+        <table bgcolor="#f0f8ff" id="students-table" style="text-align:center" width="400px">
+            <thead>
+            <tr>
+                <th>FirstName</th>
+                <th>SecondName</th>
+                <th>Group</th>
+                <th>URL</th>
+            </tr>
+            </thead>
+            <tbody id="students">
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
