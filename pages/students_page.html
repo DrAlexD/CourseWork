@@ -15,11 +15,11 @@
                         for (let i = 0; i < resText.length; i++) {
                             document.getElementById("students").innerHTML += "<tr>\n" +
                                 `                <td>${resText[i].firstName}</td>\n` +
-                                `               <td>${resText[i].secondName}</td>\n` +
+                                `                <td>${resText[i].secondName}</td>\n` +
                                 `                <td>${resText[i].group}</td>\n` +
-                                "                <td><input type=\"button\" value=\"Student page\" class=\"url\"\n" +
-                                `                           onclick='window.location.href = "/student/${resText[i].studentId}";'/></td>\n` +
-                                "            </tr>\n";
+                                "                <td><input type='button' value='Student page'\n" +
+                                `                           onclick="window.location.href = '/student/${resText[i].studentId}'"/></td>\n` +
+                                "            </tr>";
                         }
                     } else {
                         window.location.href = '/actions';
@@ -49,19 +49,16 @@
                     let resText = await response.json();
 
                     if (response.ok) {
-                        document.getElementById("students").innerHTML = "";
+                        let studentsTable = document.getElementById("students");
+                        studentsTable.innerHTML = "";
                         for (let i = 0; i < resText.length; i++) {
-                            document.getElementById("students").innerHTML += "<tr>\n" +
-                                `           <td>${resText[i].firstName}</td>\n` +
-                                `            <td>${resText[i].secondName}</td>\n` +
-                                `            <td>${resText[i].group}</td>\n` +
-                                `            <td><input type="button" value="Student page" class="url"/></td>\n` +
-                                "        </tr>";
-
-                            let studentURLButton = (document.getElementsByClassName("url"))[i];
-                            studentURLButton.onclick = function () {
-                                window.location.href = `/student/${resText[i].studentId}`;
-                            };
+                            studentsTable.innerHTML += "<tr>\n" +
+                                `                <td>${resText[i].firstName}</td>\n` +
+                                `                <td>${resText[i].secondName}</td>\n` +
+                                `                <td>${resText[i].group}</td>\n` +
+                                "                <td><input type='button' value='Student page'\n" +
+                                `                           onclick="window.location.href = '/student/${resText[i].studentId}'"/></td>\n` +
+                                "            </tr>";
                         }
                     } else
                         alert(resText);
@@ -100,7 +97,7 @@
             <input class="btn" id="searchButton" type="button" value="Search"/>
             <input class="btn" id="allStudentsButton" type="button" value="All students"/>
         </div>
-        <table bgcolor="#f0f8ff" id="students-table" style="text-align:center" width="400px">
+        <table bgcolor="#f0f8ff" style="text-align:center" width="400px">
             <thead>
             <tr>
                 <th>FirstName</th>
