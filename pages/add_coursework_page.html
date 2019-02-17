@@ -30,13 +30,11 @@
 
                     let response = await fetch(`/student/${locId}/add/coursework`, options);
                     let resText = await response.json();
-                    alert(resText);
-                    /*
+
                     if (response.ok)
-                        window.location.href = `/student/${locId}/courseWork/${resText}`;
+                        window.location.href = `/student/${locId}`;
                     else
                         alert(resText);
-                        */
                 } catch (err) {
                     alert(err);
                 }

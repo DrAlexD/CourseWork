@@ -323,10 +323,10 @@ app.get('/students/all.json', (req, res) => {
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        res.send(JSON.stringify(result));
+                        res.status(200).send(JSON.stringify(result));
                     } else {
                         console.log(`Not found students`);
-                        res.redirect('/actions');
+                        res.status(404).send(JSON.stringify(`Not found students`));
                         res.end();
                     }
                 }
@@ -480,10 +480,10 @@ app.get('/professors/all.json', (req, res) => {
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        res.send(JSON.stringify(result));
+                        res.status(200).send(JSON.stringify(result));
                     } else {
                         console.log(`Not found professors`);
-                        res.redirect('/actions');
+                        res.status(404).send(JSON.stringify(`Not found professors`));
                         res.end();
                     }
                 }
@@ -560,7 +560,7 @@ app.get('/student/:id/courseworks/info.json', (req, res) => {
                     if (typeof result[0] != 'undefined') {
                         res.status(200).send(JSON.stringify(result));
                     } else {
-                        res.status(404).send();
+                        res.status(404).send("Not found courseWorks");
                     }
                 }
             });
@@ -590,15 +590,13 @@ app.post('/student/:id/add/coursework', (req, res) => {
                     console.error(err1);
                     res.status(500).send(JSON.stringify("Copy of existing courseWork"));
                 } else {
-                    console.log(`Success added courseWork: ${req.body.title}`);
-
                     con.query(`SELECT * FROM coursework WHERE title='${req.body.title}'`,
                         function (err2, result) {
                             if (err2)
                                 console.error(err2);
                             else {
                                 console.log(`Success added courseWork: ${result[0].title}`);
-                                res.status(200).send(JSON.stringify(result[0].title.hashCode()));
+                                res.status(200).send(JSON.stringify(result[0].courseWorkId));
                                 res.end();
                             }
                         });
@@ -606,11 +604,11 @@ app.post('/student/:id/add/coursework', (req, res) => {
             }
         );
     } else {
-        res.status(404).send(JSON.stringify("Undefined title"));
-        console.log("Undefined title");
+        res.status(404).send(JSON.stringify("Undefined title or year or headFirstName or headSecondName"));
+        console.log("Undefined title or year or headFirstName or headSecondName");
     }
 });
-//3169710
+
 app.get('/student/:id/coursework/:code', (req, res) => {
     if (typeof req.session.username != 'undefined') {
         con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}'`,
@@ -621,7 +619,7 @@ app.get('/student/:id/coursework/:code', (req, res) => {
                     if (typeof result[0] != 'undefined') {
                         let i = 0;
                         for (; i < result.length; i++) {
-                            if (result[i].title.hashCode() == req.params.code) {
+                            if (result[i].courseWorkId == req.params.code) {
                                 console.log(`CourseWork page, courseWork: ${result[i].title}`);
                                 res.sendFile(path.join(__filename, '../pages/coursework_page.html'));
                                 break;
@@ -640,7 +638,7 @@ app.get('/student/:id/coursework/:code', (req, res) => {
                 }
             });
     } else {
-        console.log(`Professor page, session is ${req.session.username}`);
+        console.log(`CourseWork page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
@@ -656,7 +654,7 @@ app.get('/student/:id/coursework/:code/info.json', (req, res) => {
                     if (typeof result[0] != 'undefined') {
                         let i = 0;
                         for (; i < result.length; i++) {
-                            if (result[i].title.hashCode() == req.params.code) {
+                            if (result[i].courseWorkId == req.params.code) {
                                 res.send(JSON.stringify(result[i]));
                                 break;
                             }
@@ -667,14 +665,14 @@ app.get('/student/:id/coursework/:code/info.json', (req, res) => {
                             res.end();
                         }
                     } else {
-                        console.log(`Not found courseWork`);
+                        console.log(`Not found courseWorks`);
                         res.redirect(`/student/${req.params.id}`);
                         res.end();
                     }
                 }
             });
     } else {
-        console.log(`Professor page, session is ${req.session.username}`);
+        console.log(`CourseWork page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }

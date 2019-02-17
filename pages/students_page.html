@@ -11,16 +11,19 @@
                 let getAllStudents = async function () {
                     let response = await fetch(`/students/all.json`);
                     let resText = await response.json();
-
-                    document.getElementById("students").innerHTML = "";
-                    for (let i = 0; i < resText.length; i++) {
-                        document.getElementById("students").innerHTML += "<tr>\n" +
-                            `                <td>${resText[i].firstName}</td>\n` +
-                            `               <td>${resText[i].secondName}</td>\n` +
-                            `                <td>${resText[i].group}</td>\n` +
-                            "                <td><input type=\"button\" value=\"Student page\" class=\"url\"\n" +
-                            `                           onclick='window.location.href = "/student/${resText[i].studentId}";'/></td>\n` +
-                            "            </tr>\n";
+                    if (response.ok) {
+                        document.getElementById("students").innerHTML = "";
+                        for (let i = 0; i < resText.length; i++) {
+                            document.getElementById("students").innerHTML += "<tr>\n" +
+                                `                <td>${resText[i].firstName}</td>\n` +
+                                `               <td>${resText[i].secondName}</td>\n` +
+                                `                <td>${resText[i].group}</td>\n` +
+                                "                <td><input type=\"button\" value=\"Student page\" class=\"url\"\n" +
+                                `                           onclick='window.location.href = "/student/${resText[i].studentId}";'/></td>\n` +
+                                "            </tr>\n";
+                        }
+                    } else {
+                        window.location.href = '/actions';
                     }
                 };
 

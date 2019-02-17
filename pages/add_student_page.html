@@ -28,7 +28,7 @@
                     let resText = await response.json();
 
                     if (response.ok)
-                        window.location.href = `/student/${resText}`;
+                        window.location.href = `/actions`;
                     else
                         alert(resText);
                 } catch (err) {

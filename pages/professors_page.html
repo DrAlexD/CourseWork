@@ -11,15 +11,18 @@
                 let getAllProfessors = async function () {
                     let response = await fetch(`/professors/all.json`);
                     let resText = await response.json();
-
-                    document.getElementById("professors").innerHTML = "";
-                    for (let i = 0; i < resText.length; i++) {
-                        document.getElementById("professors").innerHTML += "<tr>\n" +
-                            `                <td>${resText[i].firstName}</td>\n` +
-                            `               <td>${resText[i].secondName}</td>\n` +
-                            "                <td><input type=\"button\" value=\"Professor page\" class=\"url\"\n" +
-                            `                           onclick='window.location.href = "/professor/${resText[i].professorId}";'/></td>\n` +
-                            "            </tr>\n";
+                    if (response.ok) {
+                        document.getElementById("professors").innerHTML = "";
+                        for (let i = 0; i < resText.length; i++) {
+                            document.getElementById("professors").innerHTML += "<tr>\n" +
+                                `                <td>${resText[i].firstName}</td>\n` +
+                                `               <td>${resText[i].secondName}</td>\n` +
+                                "                <td><input type=\"button\" value=\"Professor page\" class=\"url\"\n" +
+                                `                           onclick='window.location.href = "/professor/${resText[i].professorId}";'/></td>\n` +
+                                "            </tr>\n";
+                        }
+                    } else {
+                        window.location.href = '/actions';
                     }
                 };
 
