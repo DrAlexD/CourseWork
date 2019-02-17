@@ -5,16 +5,6 @@
     <title>Student</title>
     <script>
         "use strict";
-        String.prototype.hashCode = function () {
-            let hash = 0;
-            for (let i = 0; i < this.length; i++) {
-                let character = this.charCodeAt(i);
-                hash = ((hash << 5) - hash) + character;
-                hash = hash & hash; // Convert to 32bit integer
-            }
-            return hash;
-        };
-
         window.onload = async function () {
             try {
                 let loc = window.location.href.split("/");

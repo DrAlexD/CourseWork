@@ -7,7 +7,6 @@
         "use strict";
         window.onload = async function () {
             try {
-
                 let getAllProfessors = async function () {
                     let response = await fetch(`/professors/all.json`);
                     let resText = await response.json();
