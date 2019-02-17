@@ -678,4 +678,35 @@ app.get('/student/:id/coursework/:code/info.json', (req, res) => {
     }
 });
 
+app.get('/professor/:id/courseworks/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM professor WHERE professorId='${req.params.id}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        con.query(`SELECT * FROM coursework WHERE headFirstName='${result[0].firstName}' AND headSecondName='${result[0].secondName}'`,
+                            function (err2, result2) {
+                                if (err2)
+                                    console.error(err2);
+                                else {
+                                    if (typeof result2[0] != 'undefined') {
+                                        res.status(200).send(JSON.stringify(result2));
+                                    } else {
+                                        res.status(404).send("Not found courseWorks");
+                                    }
+                                }
+                            });
+                    } else {
+                        res.status(404).send("Not found professor");
+                    }
+                }
+            });
+    } else {
+        res.redirect('/login');
+        res.end();
+    }
+});
+
 app.listen(port, () => console.log(`Server has been started on port ${port}!`));
