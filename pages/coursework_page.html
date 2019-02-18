@@ -20,39 +20,44 @@
                 document.getElementById("headSecondName").innerText = resText.headSecondName;
 
                 if (resText.taskText !== null) {
-                    document.getElementById("taskText").hidden = false;
-                    document.getElementsByClassName("taskText")[0].innerHTML = resText.taskText;
+                    document.getElementsByClassName("taskText")[0].hidden = false;
+                    document.getElementById("taskText").innerHTML = resText.taskText;
                 }
 
                 if (resText.isConfirmedTaskText !== null) {
-                    document.getElementById("isConfirmedTaskText").hidden = false;
-                    document.getElementsByClassName("isConfirmedTaskText")[0].innerHTML = resText.isConfirmedTaskText;
+                    document.getElementsByClassName("isConfirmedTaskText")[0].hidden = false;
+                    document.getElementById("isConfirmedTaskText").innerHTML = resText.isConfirmedTaskText;
                 }
 
                 if (resText.currentNote !== null) {
-                    document.getElementById("currentNote").hidden = false;
-                    document.getElementsByClassName("currentNote")[0].innerHTML = resText.currentNote;
+                    document.getElementsByClassName("currentNote")[0].hidden = false;
+                    document.getElementById("currentNote").innerHTML = resText.currentNote;
                 }
 
                 if (resText.linkToCode !== null) {
-                    document.getElementById("linkToCode").hidden = false;
-                    document.getElementsByClassName("linkToCode")[0].innerHTML = resText.linkToCode;
+                    document.getElementsByClassName("linkToCode")[0].hidden = false;
+                    document.getElementById("linkToCode").innerHTML = resText.linkToCode;
                 }
 
                 if (resText.linkToPresentation !== null) {
-                    document.getElementById("linkToPresentation").hidden = false;
-                    document.getElementsByClassName("linkToPresentation")[0].innerHTML = resText.linkToPresentation;
+                    document.getElementsByClassName("presentation")[0].hidden = false;
+                    document.getElementById("presentation").innerHTML = resText.linkToPresentation;
                 }
 
                 if (resText.admittanceToProtectionCourseWork !== null) {
-                    document.getElementById("admittanceToProtectionCourseWork").hidden = false;
-                    document.getElementsByClassName("admittanceToProtectionCourseWork")[0].innerHTML = resText.admittanceToProtectionCourseWork;
+                    document.getElementsByClassName("admittanceToProtection")[0].hidden = false;
+                    document.getElementById("admittanceToProtection").innerHTML = resText.admittanceToProtectionCourseWork;
                 }
 
                 if (resText.finalEvaluation !== null) {
-                    document.getElementById("finalEvaluation").hidden = false;
-                    document.getElementsByClassName("finalEvaluation")[0].innerHTML = resText.finalEvaluation;
+                    document.getElementsByClassName("finalEvaluation")[0].hidden = false;
+                    document.getElementById("finalEvaluation").innerHTML = resText.finalEvaluation;
                 }
+
+                let edit = document.getElementById('edit');
+                edit.onclick = function () {
+                    window.location.href = `/student/${locId}/coursework/${locCode}/edit`;
+                };
 
             } catch (err) {
                 alert(err);
@@ -74,26 +79,29 @@
         <div class="form-group" style="margin-bottom: 5px">
             <label>Руководитель:</label> <label id="headFirstName"></label> <label id="headSecondName"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px" id="taskText" hidden>
-            <label class="taskText"></label>
+        <div class="taskText" hidden style="margin-bottom: 5px">
+            <label id="taskText"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px" id="isConfirmedTaskText" hidden>
-            <label class="isConfirmedTaskText"></label>
+        <div class="isConfirmedTaskText" hidden style="margin-bottom: 5px">
+            <label id="isConfirmedTaskText"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px" id="currentNote" hidden>
-            <label class="currentNote"></label>
+        <div class="currentNote" hidden style="margin-bottom: 5px">
+            <label id="currentNote"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px" id="linkToCode" hidden>
-            <label class="linkToCode"></label>
+        <div class="linkToCode" hidden style="margin-bottom: 5px">
+            <label id="linkToCode"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px" id="linkToPresentation" hidden>
-            <label class="linkToPresentation"></label>
+        <div class="presentation" hidden style="margin-bottom: 5px">
+            <label id="presentation"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px" id="admittanceToProtectionCourseWork" hidden>
-            <label class="admittanceToProtectionCourseWork"></label>
+        <div class="admittanceToProtection" hidden style="margin-bottom: 5px">
+            <label id="admittanceToProtection"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px" id="finalEvaluation" hidden>
-            <label class="finalEvaluation"></label>
+        <div class="finalEvaluation" hidden style="margin-bottom: 5px">
+            <label id="finalEvaluation"></label>
+        </div>
+        <div class="form-group">
+            <input class="btn btn-lg btn-danger" id="edit" type="button" value="Edit"/>
         </div>
     </form>
 </div>

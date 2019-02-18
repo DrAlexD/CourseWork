@@ -32,6 +32,22 @@
                             "            </tr>";
                     }
                 }
+
+                let logOut = document.getElementById('logOut');
+                let edit = document.getElementById('edit');
+
+                edit.onclick = function () {
+                    window.location.href = `/student/${locId}/edit`;
+                };
+
+                logOut.onclick = async function () {
+                    try {
+                        await fetch('/logout');
+                        window.location.href = '/login';
+                    } catch (err) {
+                        alert(err);
+                    }
+                };
             } catch (err) {
                 alert(err);
             }
@@ -55,6 +71,10 @@
             <tbody id="courseWorks">
             </tbody>
         </table>
+        <div class="form-group">
+            <input class="btn btn-lg btn-danger" id="edit" type="button" value="Edit"/>
+            <input class="btn btn-lg btn-danger" id="logOut" type="button" value="Log out"/>
+        </div>
     </form>
 </div>
 </body>

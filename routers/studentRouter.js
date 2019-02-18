@@ -24,13 +24,37 @@ studentRouter.get('/:id', (req, res) => {
                         console.log(`Student page, student: ${result[0].login}`);
                     } else {
                         console.log(`Not found student`);
-                        res.redirect('/actions');
+                        res.redirect('/students');
                         res.end();
                     }
                 }
             });
     } else {
         console.log(`Student page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.get('/:id/edit', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM student WHERE studentId='${req.params.id}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.sendFile(path.join(__filename, '../../pages/student_edit_page.html'));
+                        console.log(`Student_edit page, student: ${result[0].login}`);
+                    } else {
+                        console.log(`Not found student`);
+                        res.redirect('/students');
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Student_edit page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
@@ -47,7 +71,7 @@ studentRouter.get('/:id/info.json', (req, res) => {
                         res.send(JSON.stringify(result[0]));
                     } else {
                         console.log(`Not found student: ${result[0].login}`);
-                        res.redirect('/actions');
+                        res.redirect('/students');
                         res.end();
                     }
                 }
@@ -147,6 +171,41 @@ studentRouter.get('/:id/coursework/:code', (req, res) => {
             });
     } else {
         console.log(`CourseWork page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.get('/:id/coursework/:code/edit', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        let i = 0;
+                        for (; i < result.length; i++) {
+                            if (result[i].courseWorkId == req.params.code) {
+                                console.log(`CourseWork_edit page, courseWork: ${result[i].title}`);
+                                res.sendFile(path.join(__filename, '../../pages/coursework_edit_page.html'));
+                                break;
+                            }
+                        }
+                        if (i === result.length) {
+                            console.log(`Not found courseWork`);
+                            res.redirect(`/student/${req.params.id}`);
+                            res.end();
+                        }
+                    } else {
+                        console.log(`Not found courseWorks`);
+                        res.redirect(`/student/${req.params.id}`);
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`CourseWork_edit page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }

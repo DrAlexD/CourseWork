@@ -17,11 +17,6 @@
                 document.getElementById("secondName").innerText = resText.secondName;
                 document.getElementById("group").innerText = resText.group;
 
-                let addCourseWorkButton = document.getElementById('addCourseWorkButton');
-                addCourseWorkButton.onclick = function () {
-                    window.location.href = `/student/${locId}/add/coursework`;
-                };
-
                 response = await fetch(`/student/${locId}/courseworks/info.json`);
 
                 if (response.ok) {
@@ -38,6 +33,26 @@
                             "            </tr>";
                     }
                 }
+                let addCourseWorkButton = document.getElementById('addCourseWorkButton');
+                let logOut = document.getElementById('logOut');
+                let edit = document.getElementById('edit');
+
+                addCourseWorkButton.onclick = function () {
+                    window.location.href = `/student/${locId}/add/coursework`;
+                };
+
+                edit.onclick = function () {
+                    window.location.href = `/student/${locId}/edit`;
+                };
+
+                logOut.onclick = async function () {
+                    try {
+                        await fetch('/logout');
+                        window.location.href = '/login';
+                    } catch (err) {
+                        alert(err);
+                    }
+                };
             } catch (err) {
                 alert(err);
             }
@@ -64,8 +79,12 @@
             <tbody id="courseWorks">
             </tbody>
         </table>
-        <div class="form-group" style="margin-bottom: 5px">
+        <div class="form-group" style="margin-bottom: 15px">
             <input class="btn btn-lg btn-success" id="addCourseWorkButton" value="Add courseWork" type="button"/>
+        </div>
+        <div class="form-group">
+            <input class="btn btn-lg btn-danger" id="edit" type="button" value="Edit"/>
+            <input class="btn btn-lg btn-danger" id="logOut" type="button" value="Log out"/>
         </div>
     </form>
 </div>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student</title>
+    <script>
+        "use strict";
+        window.onload = async function () {
+            try {
+                let loc = window.location.href.split("/");
+                let locId = loc[loc.length - 4];
+                let locCode = loc[loc.length - 2];
+
+                let response = await fetch(`/student/${locId}/coursework/${locCode}/info.json`);
+                let resText = await response.json();
+
+                document.getElementById("title").value = resText.title;
+                document.getElementById("year").value = resText.year;
+                document.getElementById("headFirstName").value = resText.headFirstName;
+                document.getElementById("headSecondName").value = resText.headSecondName;
+
+                if (resText.taskText !== null) {
+                    document.getElementById("taskText").value = resText.taskText; // =файл?
+                }
+
+                if (resText.isConfirmedTaskText !== null) {
+                    document.getElementById("isConfirmedTaskText").value = resText.isConfirmedTaskText;
+                }
+
+                if (resText.currentNote !== null) {
+                    document.getElementById("currentNote").value = resText.currentNote;  // =файл?
+                }
+
+                if (resText.linkToCode !== null) {
+                    document.getElementById("linkToCode").value = resText.linkToCode;
+                }
+
+                if (resText.linkToPresentation !== null) {
+                    document.getElementById("presentation").value = resText.linkToPresentation;  // =файл?
+                }
+
+                if (resText.admittanceToProtectionCourseWork !== null) {
+                    document.getElementById("admittanceToProtection").value = resText.admittanceToProtectionCourseWork;
+                }
+
+                if (resText.finalEvaluation !== null) {
+                    document.getElementById("finalEvaluation").value = resText.finalEvaluation;
+                }
+            } catch (err) {
+                alert(err);
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> CourseWork edit </h2>
+    <form name="courseWork edit">
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="title">Title</label> <input autocomplete="off" autofocus class="text-field"
+                                                    id="title" style="margin-right: 32px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="year">Year</label> <input autocomplete="off" class="text-field" id="year"
+                                                  style="margin-right: 31px" type="number"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="headFirstName">HeadFirstName</label> <input autocomplete="off" class="text-field"
+                                                                    id="headFirstName"
+                                                                    style="margin-right: 103px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="headSecondName">HeadSecondName</label> <input autocomplete="off" class="text-field"
+                                                                      id="headSecondName"
+                                                                      style="margin-right: 120px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="taskText" style="margin-left: 32px">TaskText</label> <input autocomplete="off"
+                                                                                    class="file-field" id="taskText"
+                                                                                    type="file"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="isConfirmedTaskText">IsConfirmedTaskText</label> <input autocomplete="off" class="text-field"
+                                                                                id="isConfirmedTaskText"
+                                                                                style="margin-right: 285px"
+                                                                                type="checkbox"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="currentNote" style="margin-left: 11px">CurrentNote</label> <input autocomplete="off"
+                                                                                          class="text-field"
+                                                                                          id="currentNote"
+                                                                                          type="file"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="linkToCode">LinkToCode</label> <input autocomplete="off" class="text-field" id="linkToCode"
+                                                              style="margin-right: 81px" type="url"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="presentation" style="margin-left: 13px">Presentation</label> <input autocomplete="off"
+                                                                                            class="text-field"
+                                                                                            id="presentation"
+                                                                                            type="file"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="admittanceToProtection">AdmittanceToProtection</label> <input autocomplete="off"
+                                                                                      class="text-field"
+                                                                                      id="admittanceToProtection"
+                                                                                      style="margin-right: 301px"
+                                                                                      type="checkbox"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="finalEvaluation">FinalEvaluation</label> <input autocomplete="off" class="text-field"
+                                                                        id="finalEvaluation"
+                                                                        style="margin-right: 101px" type="text"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>

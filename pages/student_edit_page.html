@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student</title>
+    <script>
+        "use strict";
+        window.onload = async function () {
+            try {
+                let loc = window.location.href.split("/");
+                let locId = loc[loc.length - 2];
+
+                let response = await fetch(`/student/${locId}/info.json`);
+                let resText = await response.json();
+
+                document.getElementById("firstName").value = resText.firstName;
+                document.getElementById("secondName").value = resText.secondName;
+                document.getElementById("studentGroup").value = resText.group;
+                document.getElementById("logIn").value = resText.login;
+                document.getElementById("password").value = resText.password;
+            } catch (err) {
+                alert(err);
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Student edit </h2>
+    <form name="student edit">
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="firstName">FirstName</label> <input autocomplete="off" autofocus class="text-field"
+                                                            id="firstName" style="margin-right: 60px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="secondName">SecondName</label> <input autocomplete="off" class="text-field" id="secondName"
+                                                              style="margin-right: 78px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px">
+            <label for="studentGroup">Group</label> <input autocomplete="off" class="text-field" id="studentGroup"
+                                                           style="margin-right: 33px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="logIn">LogIn</label> <input autocomplete="off" class="text-field" id="logIn"
+                                                    style="margin-right: 31px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="password">Password</label> <input autocomplete="off" class="text-field" id="password"
+                                                          style="margin-right: 53px" type="password"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>
