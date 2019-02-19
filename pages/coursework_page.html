@@ -7,10 +7,10 @@
         "use strict";
         window.onload = async function () {
             try {
-
                 let loc = window.location.href.split("/");
                 let locId = loc[loc.length - 3];
                 let locCode = loc[loc.length - 1];
+
                 let response = await fetch(`/student/${locId}/coursework/${locCode}/info.json`);
                 let resText = await response.json();
 
@@ -19,7 +19,7 @@
                 document.getElementById("headFirstName").innerText = resText.headFirstName;
                 document.getElementById("headSecondName").innerText = resText.headSecondName;
 
-                if (resText.taskText !== null && resText.taskText !== "") {
+                if (resText.taskText !== null && resText.taskText !== "" && resText.taskText !== "undefined") {
                     document.getElementsByClassName("taskText")[0].hidden = false;
                     //document.getElementById("taskText").files = resText.taskText;
                 }
@@ -29,12 +29,12 @@
                     document.getElementById("isConfirmedTaskText").checked = (resText.isConfirmedTaskText === 1);
                 }
 
-                if (resText.currentNote !== null && resText.currentNote !== "") {
+                if (resText.currentNote !== null && resText.currentNote !== "" && resText.currentNote !== "undefined") {
                     document.getElementsByClassName("currentNote")[0].hidden = false;
                     //document.getElementById("currentNote").files = resText.currentNote;
                 }
 
-                if (resText.linkToCode !== null && resText.linkToCode !== "") {
+                if (resText.linkToCode !== null && resText.linkToCode !== "" && resText.linkToCode !== "undefined") {
                     document.getElementsByClassName("linkToCode")[0].hidden = false;
                     document.getElementById("linkToCode").value = "Перейти";
                     document.getElementById("linkToCodeLabel").innerHTML = "Код: " + resText.linkToCode;
@@ -43,7 +43,7 @@
                     }
                 }
 
-                if (resText.presentation !== null && resText.presentation !== "") {
+                if (resText.presentation !== null && resText.presentation !== "" && resText.presentation !== "undefined") {
                     document.getElementsByClassName("presentation")[0].hidden = false;
                     //document.getElementById("presentation").files = resText.presentation;
                 }
@@ -53,10 +53,37 @@
                     document.getElementById("admittanceToProtection").checked = (resText.admittanceToProtection === 1);
                 }
 
-                if (resText.finalEvaluation !== null && resText.finalEvaluation !== "") {
+                if (resText.finalEvaluation !== null && resText.finalEvaluation !== "" && resText.finalEvaluation !== "undefined") {
                     document.getElementsByClassName("finalEvaluation")[0].hidden = false;
                     document.getElementById("finalEvaluation").innerHTML = resText.finalEvaluation;
                 }
+
+                response = await fetch(`/student/${locId}/coursework/${locCode}/consultations/info.json`);
+
+                if (response.ok) {
+                    resText = await response.json();
+                    document.getElementById('consultationsTable').hidden = false;
+                    let courseWorksButtons = document.getElementById('consultations');
+                    courseWorksButtons.innerHTML = "";
+                    for (let i = 0; i < resText.length; i++) {
+                        courseWorksButtons.innerHTML += "<tr>\n" +
+                            "                <td>\n" +
+                            `                    <input type='button' value='${(parseInt(resText[i].date.split("T")[0].split("-")[2]) + 1).toString() +
+                            "-" + resText[i].date.split("T")[0].split("-")[1] + "-" +
+                            resText[i].date.split("T")[0].split("-")[0]}'\n` +
+                            `                           onclick="window.location.href = '/student/${locId}/coursework/${locCode}/consultation/${
+                            resText[i].date.split("T")[0].split("-")[0] +
+                            "-" + resText[i].date.split("T")[0].split("-")[1] + "-" +
+                            (parseInt(resText[i].date.split("T")[0].split("-")[2]) + 1).toString()}'"/>\n` +
+                            "                </td>\n" +
+                            "            </tr>";
+                    }
+                }
+
+                let addConsultationButton = document.getElementById('addConsultationButton');
+                addConsultationButton.onclick = function () {
+                    window.location.href = `/student/${locId}/coursework/${locCode}/add/consultation`;
+                };
 
                 let edit = document.getElementById('edit');
                 edit.onclick = function () {
@@ -112,8 +139,20 @@
                                                                                       style="margin-right: 301px"
                                                                                       type="checkbox"/>
         </div>
-        <div class="finalEvaluation" hidden style="margin-bottom: 5px">
+        <div class="finalEvaluation" hidden style="margin-bottom: 10px">
             <label id="finalEvaluation"></label>
+        </div>
+        <table bgcolor="#f0f8ff" hidden id="consultationsTable" style="text-align:center; margin-bottom: 5px">
+            <thead>
+            <tr>
+                <th>Consultations</th>
+            </tr>
+            </thead>
+            <tbody id="consultations">
+            </tbody>
+        </table>
+        <div class="form-group" style="margin-bottom: 15px">
+            <input class="btn btn-lg btn-success" id="addConsultationButton" type="button" value="Add consultation"/>
         </div>
         <div class="form-group">
             <input class="btn btn-lg btn-danger" id="edit" type="button" value="Edit"/>

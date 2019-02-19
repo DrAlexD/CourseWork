@@ -179,27 +179,16 @@ studentRouter.post('/:id/add/coursework', (req, res) => {
 
 studentRouter.get('/:id/coursework/:code', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}'`,
+        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`,
             function (err, result) {
                 if (err)
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        let i = 0;
-                        for (; i < result.length; i++) {
-                            if (result[i].courseWorkId == req.params.code) {
-                                console.log(`CourseWork page, courseWork: ${result[i].title}`);
-                                res.sendFile(path.join(__filename, '../../pages/coursework_page.html'));
-                                break;
-                            }
-                        }
-                        if (i === result.length) {
-                            console.log(`Not found courseWork`);
-                            res.redirect(`/student/${req.params.id}`);
-                            res.end();
-                        }
+                        console.log(`CourseWork page, courseWork: ${result[0].title}`);
+                        res.sendFile(path.join(__filename, '../../pages/coursework_page.html'));
                     } else {
-                        console.log(`Not found courseWorks`);
+                        console.log(`Not found courseWork`);
                         res.redirect(`/student/${req.params.id}`);
                         res.end();
                     }
@@ -214,27 +203,16 @@ studentRouter.get('/:id/coursework/:code', (req, res) => {
 
 studentRouter.get('/:id/coursework/:code/edit', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}'`,
+        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`,
             function (err, result) {
                 if (err)
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        let i = 0;
-                        for (; i < result.length; i++) {
-                            if (result[i].courseWorkId == req.params.code) {
-                                console.log(`CourseWork_edit page, courseWork: ${result[i].title}`);
-                                res.sendFile(path.join(__filename, '../../pages/coursework_edit_page.html'));
-                                break;
-                            }
-                        }
-                        if (i === result.length) {
-                            console.log(`Not found courseWork`);
-                            res.redirect(`/student/${req.params.id}`);
-                            res.end();
-                        }
+                        console.log(`CourseWork_edit page, courseWork: ${result[0].title}`);
+                        res.sendFile(path.join(__filename, '../../pages/coursework_edit_page.html'));
                     } else {
-                        console.log(`Not found courseWorks`);
+                        console.log(`Not found courseWork`);
                         res.redirect(`/student/${req.params.id}`);
                         res.end();
                     }
@@ -316,26 +294,15 @@ studentRouter.post('/:id/coursework/:code/edit', (req, res) => {
 
 studentRouter.get('/:id/coursework/:code/info.json', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}'`,
+        con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`,
             function (err, result) {
                 if (err)
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        let i = 0;
-                        for (; i < result.length; i++) {
-                            if (result[i].courseWorkId == req.params.code) {
-                                res.send(JSON.stringify(result[i]));
-                                break;
-                            }
-                        }
-                        if (i === result.length) {
-                            console.log(`Not found courseWork`);
-                            res.redirect(`/student/${req.params.id}`);
-                            res.end();
-                        }
+                        res.send(JSON.stringify(result[0]));
                     } else {
-                        console.log(`Not found courseWorks`);
+                        console.log(`Not found courseWork`);
                         res.redirect(`/student/${req.params.id}`);
                         res.end();
                     }
@@ -343,6 +310,138 @@ studentRouter.get('/:id/coursework/:code/info.json', (req, res) => {
             });
     } else {
         console.log(`CourseWork page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.get('/:id/coursework/:code/consultations/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM consultation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.status(200).send(JSON.stringify(result));
+                    } else {
+                        res.status(404).send("Not found consultations");
+                    }
+                }
+            });
+    } else {
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.get('/:id/coursework/:code/add/consultation', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        console.log(`AddConsultation page, user: ${req.session.username}`);
+        res.sendFile(path.join(__filename, '../../pages/add_consultation_page.html'));
+    } else {
+        console.log(`AddConsultation page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.post('/:id/coursework/:code/add/consultation', (req, res) => {
+    if (req.body.date !== "") {
+        con.query("INSERT INTO consultation (`studentId`, `courseWorkId`, `date`) "
+            + `VALUES ('${req.params.id}','${req.params.code}', '${req.body.date}')`,
+            function (err) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log(`Success added consultation: ${req.body.date}`);
+                    res.end();
+                }
+            }
+        );
+    } else {
+        res.status(404).send(JSON.stringify("Undefined date"));
+        console.log("Undefined date");
+    }
+});
+
+studentRouter.get('/:id/coursework/:code/consultation/:date', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM consultation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        console.log(`Consultation page, consultation: ${req.params.date}`);
+                        res.sendFile(path.join(__filename, '../../pages/consultation_page.html'));
+                    } else {
+                        console.log(`Not found consultation`);
+                        res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Consultation page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.get('/:id/coursework/:code/consultation/:date/edit', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM consultation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        console.log(`Consultation_edit page, consultation: ${req.params.date}`);
+                        res.sendFile(path.join(__filename, '../../pages/consultation_edit_page.html'));
+                    } else {
+                        console.log(`Not found consultation`);
+                        res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Consultation_edit page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.post('/:id/coursework/:code/consultation/:date/edit', (req, res) => {
+    console.log(`Success edited consultation: ${req.body.date}`);
+
+    con.query("UPDATE consultation SET topic" + `='${req.body.topic}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+
+});
+
+studentRouter.get('/:id/coursework/:code/consultation/:date/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM consultation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        console.log(`Consultation page, consultation: ${req.params.date}`);
+                        res.send(JSON.stringify(result[0]));
+                    } else {
+                        console.log(`Not found consultation`);
+                        res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Consultation page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }

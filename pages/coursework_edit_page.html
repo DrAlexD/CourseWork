@@ -19,7 +19,7 @@
                 document.getElementById("headFirstName").value = resText.headFirstName;
                 document.getElementById("headSecondName").value = resText.headSecondName;
 
-                if (resText.taskText !== null && resText.taskText !== "") {
+                if (resText.taskText !== null && resText.taskText !== "" && resText.taskText !== "undefined") {
                     //document.getElementById("taskText").files = resText.taskText; // =файл?
                 }
 
@@ -27,15 +27,15 @@
                     document.getElementById("isConfirmedTaskText").checked = (resText.isConfirmedTaskText === 1);
                 }
 
-                if (resText.currentNote !== null && resText.currentNote !== "") {
+                if (resText.currentNote !== null && resText.currentNote !== "" && resText.currentNote !== "undefined") {
                     //document.getElementById("currentNote").files = resText.currentNote;  // =файл?
                 }
 
-                if (resText.linkToCode !== null && resText.linkToCode !== "") {
+                if (resText.linkToCode !== null && resText.linkToCode !== "" && resText.linkToCode !== "undefined") {
                     document.getElementById("linkToCode").value = resText.linkToCode;
                 }
 
-                if (resText.presentation !== null && resText.presentation !== "") {
+                if (resText.presentation !== null && resText.presentation !== "" && resText.presentation !== "undefined") {
                     //document.getElementById("presentation").files = resText.presentation;  // =файл?
                 }
 
@@ -43,7 +43,7 @@
                     document.getElementById("admittanceToProtection").checked = (resText.admittanceToProtection === 1);
                 }
 
-                if (resText.finalEvaluation !== null && resText.finalEvaluation !== "") {
+                if (resText.finalEvaluation !== null && resText.finalEvaluation !== "" && resText.finalEvaluation !== "undefined") {
                     document.getElementById("finalEvaluation").value = resText.finalEvaluation;
                 }
 

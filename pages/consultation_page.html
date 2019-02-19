@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultation</title>
+    <script>
+        "use strict";
+        window.onload = async function () {
+            try {
+                let loc = window.location.href.split("/");
+                let locId = loc[loc.length - 5];
+                let locCode = loc[loc.length - 3];
+                let locDate = loc[loc.length - 1];
+
+                let response = await fetch(`/student/${locId}/coursework/${locCode}/consultation/${locDate}/info.json`);
+                let resText = await response.json();
+
+
+                document.getElementById("date").innerText = (parseInt(resText.date.split("T")[0].split("-")[2]) + 1).toString() +
+                    "-" + resText.date.split("T")[0].split("-")[1] + "-" +
+                    resText.date.split("T")[0].split("-")[0];
+
+                if (resText.topic !== null && resText.topic !== "" && resText.topic !== "undefined") {
+                    document.getElementsByClassName("topic")[0].hidden = false;
+                    //document.getElementById("topic").files = resText.topic;
+                }
+
+                let edit = document.getElementById('edit');
+                edit.onclick = function () {
+                    window.location.href = `/student/${locId}/coursework/${locCode}/consultation/${locDate}/edit`;
+                };
+
+                let back = document.getElementById('back');
+                back.onclick = function () {
+                    window.location.href = `/student/${locId}/coursework/${locCode}`;
+                };
+            } catch (err) {
+                alert(err);
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Consultation </h2>
+    <form name="consultation">
+        <div class="form-group" style="margin-bottom: 5px">
+            <label>Дата:</label> <label id="date"></label>
+        </div>
+        <div class="topic" hidden style="margin-bottom: 5px">
+            <label>Тема:</label> <label id="topic"></label>
+        </div>
+        <div class="form-group">
+            <input class="btn btn-lg btn-danger" id="back" type="button" value="Back"/>
+            <input class="btn btn-lg btn-danger" id="edit" type="button" value="Edit"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>

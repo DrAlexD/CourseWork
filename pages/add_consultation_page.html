@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add consultation</title>
+    <script>
+        "use strict";
+        window.onload = function () {
+            let addConsultationButton = document.getElementById('addConsultationButton');
+            let inputs = document.getElementsByTagName('input');
+
+            let loc = window.location.href.split("/");
+            let locId = loc[loc.length - 5];
+            let locCode = loc[loc.length - 3];
+
+            addConsultationButton.onclick = async function () {
+                try {
+                    let consultationData = {
+                        date: inputs[0].value
+                    };
+
+                    let options = {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(consultationData)
+                    };
+
+                    let response = await fetch(`/student/${locId}/coursework/${locCode}/add/consultation`, options);
+
+                    if (response.ok)
+                        window.location.href = `/student/${locId}/coursework/${locCode}`;
+                    else {
+                        let resText = await response.json();
+                        alert(resText);
+                    }
+                } catch (err) {
+                    alert(err);
+                }
+            };
+
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Add consultation </h2>
+    <form name="add consultation">
+        <div class="form-group" style="margin-bottom: 15px">
+            <label for="date">Date</label> <input autocomplete="off" class="text-field" id="date"
+                                                  style="margin-right: 117px" type="date"/>
+        </div>
+        <div class="form-group">
+            <input class="btn btn-lg btn-success" id="addConsultationButton" type="button" value="Add"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>
