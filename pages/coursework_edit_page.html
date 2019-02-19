@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student</title>
+    <title>CourseWork edit</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -19,33 +19,73 @@
                 document.getElementById("headFirstName").value = resText.headFirstName;
                 document.getElementById("headSecondName").value = resText.headSecondName;
 
-                if (resText.taskText !== null) {
-                    document.getElementById("taskText").value = resText.taskText; // =файл?
+                if (resText.taskText !== null && resText.taskText !== "") {
+                    //document.getElementById("taskText").files = resText.taskText; // =файл?
                 }
 
                 if (resText.isConfirmedTaskText !== null) {
-                    document.getElementById("isConfirmedTaskText").value = resText.isConfirmedTaskText;
+                    document.getElementById("isConfirmedTaskText").checked = (resText.isConfirmedTaskText === 1);
                 }
 
-                if (resText.currentNote !== null) {
-                    document.getElementById("currentNote").value = resText.currentNote;  // =файл?
+                if (resText.currentNote !== null && resText.currentNote !== "") {
+                    //document.getElementById("currentNote").files = resText.currentNote;  // =файл?
                 }
 
-                if (resText.linkToCode !== null) {
+                if (resText.linkToCode !== null && resText.linkToCode !== "") {
                     document.getElementById("linkToCode").value = resText.linkToCode;
                 }
 
-                if (resText.linkToPresentation !== null) {
-                    document.getElementById("presentation").value = resText.linkToPresentation;  // =файл?
+                if (resText.presentation !== null && resText.presentation !== "") {
+                    //document.getElementById("presentation").files = resText.presentation;  // =файл?
                 }
 
-                if (resText.admittanceToProtectionCourseWork !== null) {
-                    document.getElementById("admittanceToProtection").value = resText.admittanceToProtectionCourseWork;
+                if (resText.admittanceToProtection !== null) {
+                    document.getElementById("admittanceToProtection").checked = (resText.admittanceToProtection === 1);
                 }
 
-                if (resText.finalEvaluation !== null) {
+                if (resText.finalEvaluation !== null && resText.finalEvaluation !== "") {
                     document.getElementById("finalEvaluation").value = resText.finalEvaluation;
                 }
+
+                let saveButton = document.getElementById("saveButton");
+                let backButton = document.getElementById("backButton");
+                let inputs = document.getElementsByTagName('input');
+
+                backButton.onclick = function () {
+                    window.location.href = `/student/${locId}/coursework/${locCode}`;
+                };
+
+                saveButton.onclick = async function () {
+
+                    let courseWorkData = {
+                        title: inputs[0].value,
+                        year: inputs[1].value,
+                        headFirstName: inputs[2].value,
+                        headSecondName: inputs[3].value,
+                        taskText: document.getElementById("taskText").files[0],
+                        isConfirmedTaskText: inputs[5].checked,
+                        currentNote: document.getElementById("currentNote").files[0],
+                        linkToCode: inputs[7].value,
+                        presentation: document.getElementById("presentation").files[0],
+                        admittanceToProtection: inputs[9].checked,
+                        finalEvaluation: inputs[10].value
+                    };
+
+                    let options = {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(courseWorkData)
+                    };
+
+                    response = await fetch(`/student/${locId}/coursework/${locCode}/edit`, options);
+
+                    if (response.ok)
+                        window.location.href = `/student/${locId}/coursework/${locCode}`;
+                    else {
+                        let resText = await response.json();
+                        alert(resText);
+                    }
+                };
             } catch (err) {
                 alert(err);
             }
@@ -58,8 +98,8 @@
     <h2> CourseWork edit </h2>
     <form name="courseWork edit">
         <div class="form-group" style="margin-bottom: 5px">
-            <label for="title">Title</label> <input autocomplete="off" autofocus class="text-field"
-                                                    id="title" style="margin-right: 32px" type="text"/>
+            <label for="title">Title</label> <input autocomplete="off" autofocus class="text-field" id="title"
+                                                    style="margin-right: 32px" type="text"/>
         </div>
         <div class="form-group" style="margin-bottom: 5px">
             <label for="year">Year</label> <input autocomplete="off" class="text-field" id="year"
@@ -94,7 +134,7 @@
         </div>
         <div class="form-group" style="margin-bottom: 5px">
             <label for="linkToCode">LinkToCode</label> <input autocomplete="off" class="text-field" id="linkToCode"
-                                                              style="margin-right: 81px" type="url"/>
+                                                              size="40" style="margin-right: 81px" type="text"/>
         </div>
         <div class="form-group" style="margin-bottom: 5px">
             <label for="presentation" style="margin-left: 13px">Presentation</label> <input autocomplete="off"
@@ -113,6 +153,10 @@
             <label for="finalEvaluation">FinalEvaluation</label> <input autocomplete="off" class="text-field"
                                                                         id="finalEvaluation"
                                                                         style="margin-right: 101px" type="text"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px">
+            <input class="btn btn-lg btn-success" id="backButton" type="button" value="Back"/>
+            <input class="btn btn-lg btn-success" id="saveButton" type="button" value="Save"/>
         </div>
     </form>
 </div>

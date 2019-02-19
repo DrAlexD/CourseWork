@@ -60,6 +60,42 @@ studentRouter.get('/:id/edit', (req, res) => {
     }
 });
 
+studentRouter.post('/:id/edit', (req, res) => {
+    console.log(`Success edited student: ${req.body.login}`);
+    if (req.body.login !== "") {
+        con.query("UPDATE student SET login" + `='${req.body.login}' WHERE studentId='${req.params.id}'`, err => {
+            if (err) {
+                console.error(err);
+                res.status(500).send(JSON.stringify("Copy of existing student"));
+            }
+        });
+    }
+    if (req.body.firstName !== "") {
+        con.query("UPDATE student SET firstName" + `='${req.body.firstName}' WHERE studentId='${req.params.id}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
+    if (req.body.secondName !== "") {
+        con.query("UPDATE student SET secondName" + `='${req.body.secondName}' WHERE studentId='${req.params.id}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
+    if (req.body.studentGroup !== "") {
+        con.query("UPDATE student SET `group`" + `='${req.body.studentGroup}' WHERE studentId='${req.params.id}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
+    if (req.body.password !== "") {
+        con.query("UPDATE student SET password" + `='${req.body.password}' WHERE studentId='${req.params.id}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
+});
+
 studentRouter.get('/:id/info.json', (req, res) => {
     if (typeof req.session.username != 'undefined') {
         con.query(`SELECT * FROM student WHERE studentId='${req.params.id}'`,
@@ -209,6 +245,73 @@ studentRouter.get('/:id/coursework/:code/edit', (req, res) => {
         res.redirect('/login');
         res.end();
     }
+});
+
+studentRouter.post('/:id/coursework/:code/edit', (req, res) => {
+    console.log(`Success edited coursework: ${req.body.title}`);
+    if (req.body.title !== "") {
+        con.query("UPDATE courseWork SET title" + `='${req.body.title}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+            if (err) {
+                console.error(err);
+                res.status(500).send(JSON.stringify("Copy of existing courseWork"));
+            }
+        });
+    }
+    if (req.body.year !== "") {
+        con.query("UPDATE courseWork SET year" + `='${req.body.year}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
+    if (req.body.headFirstName !== "") {
+        con.query("UPDATE courseWork SET headFirstName" + `='${req.body.headFirstName}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
+    if (req.body.headSecondName !== "") {
+        con.query("UPDATE courseWork SET headSecondName" + `='${req.body.headSecondName}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
+
+    con.query("UPDATE courseWork SET taskText" + `='${req.body.taskText}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+
+    req.body.isConfirmedTaskText = (req.body.isConfirmedTaskText) ? 1 : 0;
+    con.query("UPDATE courseWork SET isConfirmedTaskText" + `='${req.body.isConfirmedTaskText}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+
+    con.query("UPDATE courseWork SET currentNote" + `='${req.body.currentNote}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+
+    con.query("UPDATE courseWork SET linkToCode" + `='${req.body.linkToCode}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+
+    con.query("UPDATE courseWork SET presentation" + `='${req.body.presentation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+
+    req.body.admittanceToProtection = (req.body.admittanceToProtection) ? 1 : 0;
+    con.query("UPDATE courseWork SET admittanceToProtection" + `='${req.body.admittanceToProtection}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+
+    con.query("UPDATE courseWork SET finalEvaluation" + `='${req.body.finalEvaluation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
 });
 
 studentRouter.get('/:id/coursework/:code/info.json', (req, res) => {

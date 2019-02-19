@@ -10,7 +10,7 @@ const con = mysql.createConnection({
     database: "CourseWorkDatabase"
 });
 
-con.connect(err => err ? console.error(err) : console.log("ProfessorRouter connected to MySQL database!"));
+con.connect(err => err ? console.error(err) : console.log("ProfessorRouter connected to MySQL database!\n"));
 
 professorRouter.get('/:id', (req, res) => {
     if (typeof req.session.username != 'undefined') {
@@ -33,6 +33,60 @@ professorRouter.get('/:id', (req, res) => {
         console.log(`Professor page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
+    }
+});
+
+professorRouter.get('/:id/edit', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM professor WHERE professorId='${req.params.id}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.sendFile(path.join(__filename, '../../pages/professor_edit_page.html'));
+                        console.log(`Professor_edit page, professor: ${result[0].login}`);
+                    } else {
+                        console.log(`Not found professor`);
+                        res.redirect('/professors');
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Professor_edit page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+professorRouter.post('/:id/edit', (req, res) => {
+    console.log(`Success edited professor: ${req.body.login}`);
+    if (req.body.login !== "") {
+        con.query("UPDATE professor SET login" + `='${req.body.login}' WHERE professorId='${req.params.id}'`, err => {
+            if (err) {
+                console.error(err);
+                res.status(500).send(JSON.stringify("Copy of existing professor"));
+            }
+        });
+    }
+    if (req.body.firstName !== "") {
+        con.query("UPDATE professor SET firstName" + `='${req.body.firstName}' WHERE professorId='${req.params.id}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
+    if (req.body.secondName !== "") {
+        con.query("UPDATE professor SET secondName" + `='${req.body.secondName}' WHERE professorId='${req.params.id}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
+    if (req.body.password !== "") {
+        con.query("UPDATE professor SET password" + `='${req.body.password}' WHERE professorId='${req.params.id}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
     }
 });
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Professor</title>
+    <title>CourseWork</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -19,37 +19,41 @@
                 document.getElementById("headFirstName").innerText = resText.headFirstName;
                 document.getElementById("headSecondName").innerText = resText.headSecondName;
 
-                if (resText.taskText !== null) {
+                if (resText.taskText !== null && resText.taskText !== "") {
                     document.getElementsByClassName("taskText")[0].hidden = false;
-                    document.getElementById("taskText").innerHTML = resText.taskText;
+                    //document.getElementById("taskText").files = resText.taskText;
                 }
 
-                if (resText.isConfirmedTaskText !== null) {
+                if (resText.isConfirmedTaskText !== null && resText.isConfirmedTaskText !== 0) {
                     document.getElementsByClassName("isConfirmedTaskText")[0].hidden = false;
-                    document.getElementById("isConfirmedTaskText").innerHTML = resText.isConfirmedTaskText;
+                    document.getElementById("isConfirmedTaskText").checked = (resText.isConfirmedTaskText === 1);
                 }
 
-                if (resText.currentNote !== null) {
+                if (resText.currentNote !== null && resText.currentNote !== "") {
                     document.getElementsByClassName("currentNote")[0].hidden = false;
-                    document.getElementById("currentNote").innerHTML = resText.currentNote;
+                    //document.getElementById("currentNote").files = resText.currentNote;
                 }
 
-                if (resText.linkToCode !== null) {
+                if (resText.linkToCode !== null && resText.linkToCode !== "") {
                     document.getElementsByClassName("linkToCode")[0].hidden = false;
-                    document.getElementById("linkToCode").innerHTML = resText.linkToCode;
+                    document.getElementById("linkToCode").value = "Перейти";
+                    document.getElementById("linkToCodeLabel").innerHTML = "Код: " + resText.linkToCode;
+                    document.getElementById("linkToCode").onclick = function () {
+                        window.location.href = `${resText.linkToCode}`;
+                    }
                 }
 
-                if (resText.linkToPresentation !== null) {
+                if (resText.presentation !== null && resText.presentation !== "") {
                     document.getElementsByClassName("presentation")[0].hidden = false;
-                    document.getElementById("presentation").innerHTML = resText.linkToPresentation;
+                    //document.getElementById("presentation").files = resText.presentation;
                 }
 
-                if (resText.admittanceToProtectionCourseWork !== null) {
+                if (resText.admittanceToProtection !== null && resText.admittanceToProtection !== 0) {
                     document.getElementsByClassName("admittanceToProtection")[0].hidden = false;
-                    document.getElementById("admittanceToProtection").innerHTML = resText.admittanceToProtectionCourseWork;
+                    document.getElementById("admittanceToProtection").checked = (resText.admittanceToProtection === 1);
                 }
 
-                if (resText.finalEvaluation !== null) {
+                if (resText.finalEvaluation !== null && resText.finalEvaluation !== "") {
                     document.getElementsByClassName("finalEvaluation")[0].hidden = false;
                     document.getElementById("finalEvaluation").innerHTML = resText.finalEvaluation;
                 }
@@ -71,10 +75,10 @@
     <h2> CourseWork </h2>
     <form name="courseWork">
         <div class="form-group" style="margin-bottom: 5px">
-            <label id="title"></label>
+            <label>Название:</label> <label id="title"></label>
         </div>
         <div class="form-group" style="margin-bottom: 5px">
-            <label id="year"></label>
+            <label>Год создания:</label> <label id="year"></label>
         </div>
         <div class="form-group" style="margin-bottom: 5px">
             <label>Руководитель:</label> <label id="headFirstName"></label> <label id="headSecondName"></label>
@@ -83,19 +87,30 @@
             <label id="taskText"></label>
         </div>
         <div class="isConfirmedTaskText" hidden style="margin-bottom: 5px">
-            <label id="isConfirmedTaskText"></label>
+            <label for="isConfirmedTaskText">IsConfirmedTaskText</label> <input autocomplete="off" class="text-field"
+                                                                                disabled
+                                                                                id="isConfirmedTaskText"
+                                                                                style="margin-right: 285px"
+                                                                                type="checkbox"/>
         </div>
         <div class="currentNote" hidden style="margin-bottom: 5px">
             <label id="currentNote"></label>
         </div>
         <div class="linkToCode" hidden style="margin-bottom: 5px">
-            <label id="linkToCode"></label>
+            <label for="linkToCode" id="linkToCodeLabel"></label> <input autocomplete="off" class="text-field"
+                                                                         id="linkToCode" style="margin-right: 100px"
+                                                                         type="button"/>
         </div>
         <div class="presentation" hidden style="margin-bottom: 5px">
             <label id="presentation"></label>
         </div>
         <div class="admittanceToProtection" hidden style="margin-bottom: 5px">
-            <label id="admittanceToProtection"></label>
+            <label for="admittanceToProtection">AdmittanceToProtection</label> <input autocomplete="off"
+                                                                                      class="text-field"
+                                                                                      disabled
+                                                                                      id="admittanceToProtection"
+                                                                                      style="margin-right: 301px"
+                                                                                      type="checkbox"/>
         </div>
         <div class="finalEvaluation" hidden style="margin-bottom: 5px">
             <label id="finalEvaluation"></label>

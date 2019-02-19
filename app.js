@@ -4,7 +4,7 @@ const MySQLStore = require('express-mysql-session')(session);
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
-const logInRouter = require('./routers/actionsRouter');
+const actionsRouter = require('./routers/actionsRouter');
 const studentRouter = require('./routers/studentRouter');
 const professorRouter = require('./routers/professorRouter');
 
@@ -55,7 +55,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-app.use('/', logInRouter);
+app.use('/', actionsRouter);
 app.use('/student', studentRouter);
 app.use('/professor', professorRouter);
 
