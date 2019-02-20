@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add protection</title>
+    <script>
+        "use strict";
+        window.onload = function () {
+            let addProtectionButton = document.getElementById('addProtectionButton');
+            let inputs = document.getElementsByTagName('input');
+            let backButton = document.getElementById("backButton");
+
+            let loc = window.location.href.split("/");
+            let locId = loc[loc.length - 5];
+            let locCode = loc[loc.length - 3];
+
+            backButton.onclick = function () {
+                window.location.href = `/student/${locId}/coursework/${locCode}`;
+            };
+
+            addProtectionButton.onclick = async function () {
+                try {
+                    let protectionData = {
+                        date: inputs[0].value,
+                        isMainProtection: inputs[1].checked
+                    };
+
+                    let options = {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(protectionData)
+                    };
+
+                    let response = await fetch(`/student/${locId}/coursework/${locCode}/add/protection`, options);
+
+                    if (response.ok)
+                        window.location.href = `/student/${locId}/coursework/${locCode}`;
+                    else {
+                        let resText = await response.json();
+                        alert(resText);
+                    }
+                } catch (err) {
+                    alert(err);
+                }
+            };
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Add protection </h2>
+    <form name="add protection">
+        <div class="form-group" style="margin-bottom: 15px">
+            <label for="date">Date</label> <input autocomplete="off" class="text-field" id="date"
+                                                  style="margin-right: 117px" type="date"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="isMainProtection">IsMainProtection</label> <input autocomplete="off"
+                                                                          class="text-field"
+                                                                          id="isMainProtection"
+                                                                          style="margin-right: 301px"
+                                                                          type="checkbox"/>
+        </div>
+        <div class="form-group">
+            <input class="btn btn-lg btn-success" id="backButton" type="button" value="Back"/>
+            <input class="btn btn-lg btn-success" id="addProtectionButton" type="button" value="Add"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>

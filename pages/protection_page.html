@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Consultation</title>
+    <title>Protection</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -12,7 +12,7 @@
                 let locCode = loc[loc.length - 3];
                 let locDate = loc[loc.length - 1];
 
-                let response = await fetch(`/student/${locId}/coursework/${locCode}/consultation/${locDate}/info.json`);
+                let response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/info.json`);
                 let resText = await response.json();
 
 
@@ -20,14 +20,19 @@
                     "-" + resText.date.split("T")[0].split("-")[1] + "-" +
                     resText.date.split("T")[0].split("-")[0];
 
-                if (resText.topic !== null && resText.topic !== "" && resText.topic !== "undefined") {
-                    document.getElementsByClassName("topic")[0].hidden = false;
-                    //document.getElementById("topic").files = resText.topic;
+                if (resText.isMainProtection !== null) {
+                    document.getElementsByClassName("isMainProtection")[0].hidden = false;
+                    document.getElementById("isMainProtection").checked = (resText.isMainProtection === 1);
+                }
+
+                if (resText.finalEvaluation !== null && resText.finalEvaluation !== 0 && resText.finalEvaluation !== "undefined") {
+                    document.getElementsByClassName("finalEvaluation")[0].hidden = false;
+                    document.getElementById("finalEvaluation").innerHTML = resText.finalEvaluation;
                 }
 
                 let editButton = document.getElementById('editButton');
                 editButton.onclick = function () {
-                    window.location.href = `/student/${locId}/coursework/${locCode}/consultation/${locDate}/edit`;
+                    window.location.href = `/student/${locId}/coursework/${locCode}/protection/${locDate}/edit`;
                 };
 
                 let backButton = document.getElementById('backButton');
@@ -38,7 +43,7 @@
                 let deleteButton = document.getElementById('deleteButton');
                 deleteButton.onclick = async function () {
                     try {
-                        await fetch(`/student/${locId}/coursework/${locCode}/consultation/${locDate}/delete`);
+                        await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/delete`);
                         window.location.href = `/student/${locId}/coursework/${locCode}`;
                     } catch (err) {
                         alert(err);
@@ -63,13 +68,21 @@
 
 <body>
 <div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Consultation </h2>
-    <form name="consultation">
+    <h2> Protection </h2>
+    <form name="protection">
         <div class="form-group" style="margin-bottom: 5px">
             <label>Дата:</label> <label id="date"></label>
         </div>
-        <div class="topic" hidden style="margin-bottom: 5px">
-            <label>Тема:</label> <label id="topic"></label>
+        <div class="isMainProtection" hidden style="margin-bottom: 5px">
+            <label for="isMainProtection">IsMainProtection</label> <input autocomplete="off"
+                                                                          class="text-field"
+                                                                          disabled
+                                                                          id="isMainProtection"
+                                                                          style="margin-right: 301px"
+                                                                          type="checkbox"/>
+        </div>
+        <div class="finalEvaluation" hidden style="margin-bottom: 10px">
+            <label id="finalEvaluation"></label>
         </div>
         <div class="form-group" style="margin-bottom: 10px">
             <input class="btn btn-lg btn-danger" id="logOutButton" type="button" value="Log out"/>

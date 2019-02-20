@@ -36,6 +36,14 @@ professorRouter.get('/:id', (req, res) => {
     }
 });
 
+professorRouter.get('/:id/delete', (req, res) => {
+    console.log(`Success deleted professor`);
+    con.query(`DELETE FROM professor WHERE professorId='${req.params.id}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+});
+
 professorRouter.get('/:id/edit', (req, res) => {
     if (typeof req.session.username != 'undefined') {
         con.query(`SELECT * FROM professor WHERE professorId='${req.params.id}'`,

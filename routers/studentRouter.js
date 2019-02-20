@@ -36,6 +36,14 @@ studentRouter.get('/:id', (req, res) => {
     }
 });
 
+studentRouter.get('/:id/delete', (req, res) => {
+    console.log(`Success deleted student`);
+    con.query(`DELETE FROM student WHERE studentId='${req.params.id}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+});
+
 studentRouter.get('/:id/edit', (req, res) => {
     if (typeof req.session.username != 'undefined') {
         con.query(`SELECT * FROM student WHERE studentId='${req.params.id}'`,
@@ -201,6 +209,14 @@ studentRouter.get('/:id/coursework/:code', (req, res) => {
     }
 });
 
+studentRouter.get('/:id/coursework/:code/delete', (req, res) => {
+    console.log(`Success deleted courseWork`);
+    con.query(`DELETE FROM coursework WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+});
+
 studentRouter.get('/:id/coursework/:code/edit', (req, res) => {
     if (typeof req.session.username != 'undefined') {
         con.query(`SELECT * FROM coursework WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`,
@@ -286,6 +302,7 @@ studentRouter.post('/:id/coursework/:code/edit', (req, res) => {
         else res.end();
     });
 
+    if (req.body.finalEvaluation === "") req.body.finalEvaluation = 0;
     con.query("UPDATE courseWork SET finalEvaluation" + `='${req.body.finalEvaluation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
         if (err) console.error(err);
         else res.end();
@@ -389,6 +406,14 @@ studentRouter.get('/:id/coursework/:code/consultation/:date', (req, res) => {
     }
 });
 
+studentRouter.get('/:id/coursework/:code/consultation/:date/delete', (req, res) => {
+    console.log(`Success deleted consultation`);
+    con.query(`DELETE FROM consultation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+});
+
 studentRouter.get('/:id/coursework/:code/consultation/:date/edit', (req, res) => {
     if (typeof req.session.username != 'undefined') {
         con.query(`SELECT * FROM consultation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
@@ -442,6 +467,154 @@ studentRouter.get('/:id/coursework/:code/consultation/:date/info.json', (req, re
             });
     } else {
         console.log(`Consultation page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+
+studentRouter.get('/:id/coursework/:code/protections/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM protection WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.status(200).send(JSON.stringify(result));
+                    } else {
+                        res.status(404).send("Not found protections");
+                    }
+                }
+            });
+    } else {
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.get('/:id/coursework/:code/add/protection', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        console.log(`AddProtection page, user: ${req.session.username}`);
+        res.sendFile(path.join(__filename, '../../pages/add_protection_page.html'));
+    } else {
+        console.log(`AddProtection page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.post('/:id/coursework/:code/add/protection', (req, res) => {
+    if (req.body.date !== "") {
+        req.body.isMainProtection = (req.body.isMainProtection) ? 1 : 0;
+        con.query("INSERT INTO protection (`studentId`, `courseWorkId`, `date`, `isMainProtection`) "
+            + `VALUES ('${req.params.id}','${req.params.code}', '${req.body.date}', '${req.body.isMainProtection}')`,
+            function (err) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log(`Success added protection: ${req.body.date}`);
+                    res.end();
+                }
+            }
+        );
+    } else {
+        res.status(404).send(JSON.stringify("Undefined date"));
+        console.log("Undefined date");
+    }
+});
+
+studentRouter.get('/:id/coursework/:code/protection/:date', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM protection WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        console.log(`Protection page, protection: ${req.params.date}`);
+                        res.sendFile(path.join(__filename, '../../pages/protection_page.html'));
+                    } else {
+                        console.log(`Not found protection`);
+                        res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Protection page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.get('/:id/coursework/:code/protection/:date/delete', (req, res) => {
+    console.log(`Success deleted protection`);
+    con.query(`DELETE FROM protection WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+});
+
+studentRouter.get('/:id/coursework/:code/protection/:date/edit', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM protection WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        console.log(`Protection_edit page, protection: ${req.params.date}`);
+                        res.sendFile(path.join(__filename, '../../pages/protection_edit_page.html'));
+                    } else {
+                        console.log(`Not found protection`);
+                        res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Protection_edit page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.post('/:id/coursework/:code/protection/:date/edit', (req, res) => {
+    console.log(`Success edited protection: ${req.body.date}`);
+
+    req.body.isMainProtection = (req.body.isMainProtection) ? 1 : 0;
+    con.query("UPDATE protection SET isMainProtection" + `='${req.body.isMainProtection}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+
+    if (req.body.finalEvaluation === "") req.body.finalEvaluation = 0;
+    con.query("UPDATE protection SET finalEvaluation" + `='${req.body.finalEvaluation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+        if (err) console.error(err);
+        else res.end();
+    });
+});
+
+studentRouter.get('/:id/coursework/:code/protection/:date/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM protection WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        console.log(`Protection page, protection: ${req.params.date}`);
+                        res.send(JSON.stringify(result[0]));
+                    } else {
+                        console.log(`Not found protection`);
+                        res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
+                        res.end();
+                    }
+                }
+            });
+    } else {
+        console.log(`Protection page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }

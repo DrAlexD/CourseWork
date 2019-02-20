@@ -36,17 +36,33 @@
 
                 let addCourseWorkButton = document.getElementById('addCourseWorkButton');
                 let logOut = document.getElementById('logOut');
-                let edit = document.getElementById('edit');
 
                 addCourseWorkButton.onclick = function () {
                     window.location.href = `/student/${locId}/add/coursework`;
                 };
 
-                edit.onclick = function () {
+                let editButton = document.getElementById('editButton');
+                editButton.onclick = function () {
                     window.location.href = `/student/${locId}/edit`;
                 };
 
-                logOut.onclick = async function () {
+                let backButton = document.getElementById('backButton');
+                backButton.onclick = function () {
+                    window.location.href = `/students`;
+                };
+
+                let deleteButton = document.getElementById('deleteButton');
+                deleteButton.onclick = async function () {
+                    try {
+                        await fetch(`/student/${locId}/delete`);
+                        window.location.href = `/students`;
+                    } catch (err) {
+                        alert(err);
+                    }
+                };
+
+                let logOutButton = document.getElementById('logOutButton');
+                logOutButton.onclick = async function () {
                     try {
                         await fetch('/logout');
                         window.location.href = '/login';
@@ -83,9 +99,13 @@
         <div class="form-group" style="margin-bottom: 15px">
             <input class="btn btn-lg btn-success" id="addCourseWorkButton" value="Add courseWork" type="button"/>
         </div>
+        <div class="form-group" style="margin-bottom: 10px">
+            <input class="btn btn-lg btn-danger" id="logOutButton" type="button" value="Log out"/>
+            <input class="btn btn-lg btn-danger" id="editButton" type="button" value="Edit"/>
+            <input class="btn btn-lg btn-danger" id="deleteButton" type="button" value="Delete"/>
+        </div>
         <div class="form-group">
-            <input class="btn btn-lg btn-danger" id="edit" type="button" value="Edit"/>
-            <input class="btn btn-lg btn-danger" id="logOut" type="button" value="Log out"/>
+            <input class="btn btn-lg btn-danger" id="backButton" type="button" value="Back"/>
         </div>
     </form>
 </div>

@@ -43,7 +43,7 @@
                     document.getElementById("admittanceToProtection").checked = (resText.admittanceToProtection === 1);
                 }
 
-                if (resText.finalEvaluation !== null && resText.finalEvaluation !== "" && resText.finalEvaluation !== "undefined") {
+                if (resText.finalEvaluation !== null && resText.finalEvaluation !== 0 && resText.finalEvaluation !== "undefined") {
                     document.getElementById("finalEvaluation").value = resText.finalEvaluation;
                 }
 
@@ -152,7 +152,7 @@
         <div class="form-group" style="margin-bottom: 5px">
             <label for="finalEvaluation">FinalEvaluation</label> <input autocomplete="off" class="text-field"
                                                                         id="finalEvaluation"
-                                                                        style="margin-right: 101px" type="text"/>
+                                                                        style="margin-right: 101px" type="number"/>
         </div>
         <div class="form-group" style="margin-bottom: 15px">
             <input class="btn btn-lg btn-success" id="backButton" type="button" value="Back"/>

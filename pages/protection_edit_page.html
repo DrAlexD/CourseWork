@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Protection edit</title>
+    <script>
+        "use strict";
+        window.onload = async function () {
+            try {
+                let loc = window.location.href.split("/");
+                let locId = loc[loc.length - 6];
+                let locCode = loc[loc.length - 4];
+                let locDate = loc[loc.length - 2];
+
+                let response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/info.json`);
+                let resText = await response.json();
+
+                document.getElementById("date").innerText = (parseInt(resText.date.split("T")[0].split("-")[2]) + 1).toString() +
+                    "-" + resText.date.split("T")[0].split("-")[1] + "-" +
+                    resText.date.split("T")[0].split("-")[0];
+
+                if (resText.isMainProtection !== null) {
+                    document.getElementById("isMainProtection").checked = (resText.isMainProtection === 1);
+                }
+
+                if (resText.finalEvaluation !== null && resText.finalEvaluation !== 0 && resText.finalEvaluation !== "undefined") {
+                    document.getElementById("finalEvaluation").value = resText.finalEvaluation;
+                }
+
+                let backButton = document.getElementById('backButton');
+                let saveButton = document.getElementById('saveButton');
+                let inputs = document.getElementsByTagName('input');
+
+                saveButton.onclick = async function () {
+
+                    let protectionData = {
+                        isMainProtection: inputs[0].checked,
+                        finalEvaluation: inputs[1].value
+                    };
+
+                    let options = {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(protectionData)
+                    };
+
+                    response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/edit`, options);
+
+                    window.location.href = `/student/${locId}/coursework/${locCode}/protection/${locDate}`;
+                };
+
+                backButton.onclick = function () {
+                    window.location.href = `/student/${locId}/coursework/${locCode}/protection/${locDate}`;
+                };
+
+            } catch (err) {
+                alert(err);
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div align="center" class="panel well" style="margin-top: 100px;">
+    <h2> Protection edit</h2>
+    <form name="protection edit">
+        <div class="form-group" style="margin-bottom: 5px">
+            <label>Дата:</label> <label id="date"></label>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="isMainProtection">IsMainProtection</label> <input autocomplete="off"
+                                                                          class="text-field"
+                                                                          id="isMainProtection"
+                                                                          style="margin-right: 301px"
+                                                                          type="checkbox"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 5px">
+            <label for="finalEvaluation">FinalEvaluation</label> <input autocomplete="off" class="text-field"
+                                                                        id="finalEvaluation"
+                                                                        style="margin-right: 101px" type="number"/>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px">
+            <input class="btn btn-lg btn-success" id="backButton" type="button" value="Back"/>
+            <input class="btn btn-lg btn-success" id="saveButton" type="button" value="Save"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>

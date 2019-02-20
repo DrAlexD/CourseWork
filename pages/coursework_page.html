@@ -53,7 +53,7 @@
                     document.getElementById("admittanceToProtection").checked = (resText.admittanceToProtection === 1);
                 }
 
-                if (resText.finalEvaluation !== null && resText.finalEvaluation !== "" && resText.finalEvaluation !== "undefined") {
+                if (resText.finalEvaluation !== null && resText.finalEvaluation !== 0 && resText.finalEvaluation !== "undefined") {
                     document.getElementsByClassName("finalEvaluation")[0].hidden = false;
                     document.getElementById("finalEvaluation").innerHTML = resText.finalEvaluation;
                 }
@@ -63,10 +63,10 @@
                 if (response.ok) {
                     resText = await response.json();
                     document.getElementById('consultationsTable').hidden = false;
-                    let courseWorksButtons = document.getElementById('consultations');
-                    courseWorksButtons.innerHTML = "";
+                    let consultationsButtons = document.getElementById('consultations');
+                    consultationsButtons.innerHTML = "";
                     for (let i = 0; i < resText.length; i++) {
-                        courseWorksButtons.innerHTML += "<tr>\n" +
+                        consultationsButtons.innerHTML += "<tr>\n" +
                             "                <td>\n" +
                             `                    <input type='button' value='${(parseInt(resText[i].date.split("T")[0].split("-")[2]) + 1).toString() +
                             "-" + resText[i].date.split("T")[0].split("-")[1] + "-" +
@@ -80,16 +80,86 @@
                     }
                 }
 
+                response = await fetch(`/student/${locId}/coursework/${locCode}/protections/info.json`);
+
+                if (response.ok) {
+                    resText = await response.json();
+                    let mainProtectionButtons = document.getElementById('mainProtection');
+                    mainProtectionButtons.innerHTML = "";
+                    let protectionsButtons = document.getElementById('protections');
+                    protectionsButtons.innerHTML = "";
+                    for (let i = 0; i < resText.length; i++) {
+                        if (resText[i].isMainProtection === 1) {
+                            if (document.getElementById('mainProtectionTable').hidden)
+                                document.getElementById('mainProtectionTable').hidden = false;
+                            mainProtectionButtons.innerHTML += "<tr>\n" +
+                                "                <td>\n" +
+                                `                    <input type='button' value='${(parseInt(resText[i].date.split("T")[0].split("-")[2]) + 1).toString() +
+                                "-" + resText[i].date.split("T")[0].split("-")[1] + "-" +
+                                resText[i].date.split("T")[0].split("-")[0]}'\n` +
+                                `                           onclick="window.location.href = '/student/${locId}/coursework/${locCode}/protection/${
+                                resText[i].date.split("T")[0].split("-")[0] +
+                                "-" + resText[i].date.split("T")[0].split("-")[1] + "-" +
+                                (parseInt(resText[i].date.split("T")[0].split("-")[2]) + 1).toString()}'"/>\n` +
+                                "                </td>\n" +
+                                "            </tr>";
+                        } else {
+                            if (document.getElementById('protectionsTable').hidden)
+                                document.getElementById('protectionsTable').hidden = false;
+                            protectionsButtons.innerHTML += "<tr>\n" +
+                                "                <td>\n" +
+                                `                    <input type='button' value='${(parseInt(resText[i].date.split("T")[0].split("-")[2]) + 1).toString() +
+                                "-" + resText[i].date.split("T")[0].split("-")[1] + "-" +
+                                resText[i].date.split("T")[0].split("-")[0]}'\n` +
+                                `                           onclick="window.location.href = '/student/${locId}/coursework/${locCode}/protection/${
+                                resText[i].date.split("T")[0].split("-")[0] +
+                                "-" + resText[i].date.split("T")[0].split("-")[1] + "-" +
+                                (parseInt(resText[i].date.split("T")[0].split("-")[2]) + 1).toString()}'"/>\n` +
+                                "                </td>\n" +
+                                "            </tr>";
+                        }
+                    }
+                }
+
+                let addProtectionButton = document.getElementById('addProtectionButton');
+                addProtectionButton.onclick = function () {
+                    window.location.href = `/student/${locId}/coursework/${locCode}/add/protection`;
+                };
+
                 let addConsultationButton = document.getElementById('addConsultationButton');
                 addConsultationButton.onclick = function () {
                     window.location.href = `/student/${locId}/coursework/${locCode}/add/consultation`;
                 };
 
-                let edit = document.getElementById('edit');
-                edit.onclick = function () {
+                let editButton = document.getElementById('editButton');
+                editButton.onclick = function () {
                     window.location.href = `/student/${locId}/coursework/${locCode}/edit`;
                 };
 
+                let backButton = document.getElementById('backButton');
+                backButton.onclick = function () {
+                    window.location.href = `/student/${locId}`;
+                };
+
+                let deleteButton = document.getElementById('deleteButton');
+                deleteButton.onclick = async function () {
+                    try {
+                        await fetch(`/student/${locId}/coursework/${locCode}/delete`);
+                        window.location.href = `/student/${locId}`;
+                    } catch (err) {
+                        alert(err);
+                    }
+                };
+
+                let logOutButton = document.getElementById('logOutButton');
+                logOutButton.onclick = async function () {
+                    try {
+                        await fetch('/logout');
+                        window.location.href = '/login';
+                    } catch (err) {
+                        alert(err);
+                    }
+                };
             } catch (err) {
                 alert(err);
             }
@@ -139,8 +209,29 @@
                                                                                       style="margin-right: 301px"
                                                                                       type="checkbox"/>
         </div>
-        <div class="finalEvaluation" hidden style="margin-bottom: 10px">
+        <div class="finalEvaluation" hidden style="margin-bottom: 5px">
             <label id="finalEvaluation"></label>
+        </div>
+        <table bgcolor="#f0f8ff" hidden id="mainProtectionTable" style="text-align:center; margin-bottom: 5px">
+            <thead>
+            <tr>
+                <th>MainProtection</th>
+            </tr>
+            </thead>
+            <tbody id="mainProtection">
+            </tbody>
+        </table>
+        <table bgcolor="#f0f8ff" hidden id="protectionsTable" style="text-align:center; margin-bottom: 5px">
+            <thead>
+            <tr>
+                <th>Protections</th>
+            </tr>
+            </thead>
+            <tbody id="protections">
+            </tbody>
+        </table>
+        <div class="form-group" style="margin-bottom: 10px">
+            <input class="btn btn-lg btn-success" id="addProtectionButton" type="button" value="Add protection"/>
         </div>
         <table bgcolor="#f0f8ff" hidden id="consultationsTable" style="text-align:center; margin-bottom: 5px">
             <thead>
@@ -154,8 +245,13 @@
         <div class="form-group" style="margin-bottom: 15px">
             <input class="btn btn-lg btn-success" id="addConsultationButton" type="button" value="Add consultation"/>
         </div>
+        <div class="form-group" style="margin-bottom: 10px">
+            <input class="btn btn-lg btn-danger" id="logOutButton" type="button" value="Log out"/>
+            <input class="btn btn-lg btn-danger" id="editButton" type="button" value="Edit"/>
+            <input class="btn btn-lg btn-danger" id="deleteButton" type="button" value="Delete"/>
+        </div>
         <div class="form-group">
-            <input class="btn btn-lg btn-danger" id="edit" type="button" value="Edit"/>
+            <input class="btn btn-lg btn-danger" id="backButton" type="button" value="Back"/>
         </div>
     </form>
 </div>
