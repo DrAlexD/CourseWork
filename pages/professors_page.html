@@ -2,11 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Professors</title>
+    <title>Профессора</title>
     <script>
         "use strict";
         window.onload = async function () {
             try {
+                let response = await fetch(`/session/info.json`);
+                let resText = await response.json();
+
+                if (resText.userType === "student") {
+                    window.location.href = `/student/${resText.userId}`;
+                }
+
                 let getAllProfessors = async function () {
                     let response = await fetch(`/professors/all.json`);
                     let resText = await response.json();
@@ -17,7 +24,7 @@
                             professorsTable.innerHTML += "<tr>\n" +
                                 `                <td>${resText[i].firstName}</td>\n` +
                                 `                <td>${resText[i].secondName}</td>\n` +
-                                "                <td><input type='button' value='Professor page'\n" +
+                                "                <td><input type='button' value='Перейти'\n" +
                                 `                           onclick="window.location.href = '/professor/${resText[i].professorId}'"/></td>\n` +
                                 "            </tr>";
                         }
@@ -53,7 +60,7 @@
                             professorsTable.innerHTML += "<tr>\n" +
                                 `                <td>${resText[i].firstName}</td>\n` +
                                 `                <td>${resText[i].secondName}</td>\n` +
-                                "                <td><input type='button' value='Professor page'\n" +
+                                "                <td><input type='button' value='Перейти'\n" +
                                 `                           onclick="window.location.href = '/student/${resText[i].professorId}'"/></td>\n` +
                                 "            </tr>";
                         }
@@ -79,29 +86,29 @@
 
 <body>
 <div align="center" style="margin-top: 100px">
-    <h2> Professors </h2>
+    <h2> Профессора </h2>
     <form name="professors">
         <div style="margin-bottom: 5px">
-            <label for="searchFirstName">FirstName</label> <input autocomplete="off" autofocus id="searchFirstName"
-                                                                  style="margin-right: 65px" type="text"/>
+            <label for="searchFirstName">Имя</label> <input autocomplete="off" autofocus id="searchFirstName"
+                                                            style="margin-right: 30px" type="text"/>
         </div>
         <div style="margin-bottom: 5px">
-            <label for="searchSecondName">SecondName</label> <input autocomplete="off" id="searchSecondName"
-                                                                    style="margin-right: 82px" type="text"/>
+            <label for="searchSecondName">Фамилия</label> <input autocomplete="off" id="searchSecondName"
+                                                                 style="margin-right: 64px" type="text"/>
         </div>
         <div style="margin-bottom: 10px">
-            <input id="searchButton" type="button" value="Search"/>
+            <input id="searchButton" type="button" value="Поиск"/>
         </div>
         <div style="margin-bottom: 15px">
-            <input id="backButton" type="button" value="Back"/>
-            <input id="allProfessorsButton" type="button" value="All professors"/>
+            <input id="backButton" type="button" value="Назад"/>
+            <input id="allProfessorsButton" type="button" value="Все профессора"/>
         </div>
         <table bgcolor="#f0f8ff" style="text-align:center" width="300px">
             <thead>
             <tr>
-                <th>FirstName</th>
-                <th>SecondName</th>
-                <th>Page</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Страница</th>
             </tr>
             </thead>
             <tbody id="professors">

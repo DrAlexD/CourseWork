@@ -2,16 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add professor</title>
+    <title>Добавить профессора</title>
     <script>
         "use strict";
-        window.onload = function () {
-            let addProfessorButton = document.getElementById('addProfessorButton');
-            let inputs = document.getElementsByTagName('input');
-            let logOut = document.getElementById('logOut');
+        window.onload = async function () {
+            try {
+                let response = await fetch(`/session/info.json`);
+                let resText = await response.json();
 
-            addProfessorButton.onclick = async function () {
-                try {
+                if (resText.userType === "student") {
+                    window.location.href = `/student/${resText.userId}`;
+                }
+                if (resText.userType === "professor") {
+                    window.location.href = `/actions`;
+                }
+
+                let addProfessorButton = document.getElementById('addProfessorButton');
+                let inputs = document.getElementsByTagName('input');
+
+                addProfessorButton.onclick = async function () {
                     let professorData = {
                         firstName: inputs[0].value,
                         secondName: inputs[1].value,
@@ -30,38 +39,34 @@
                         window.location.href = `/actions`;
                     else
                         alert(resText);
-                } catch (err) {
-                    alert(err);
-                }
-            };
+                };
 
-            logOut.onclick = async function () {
-                try {
-                    await fetch('/logout');
-                    window.location.href = '/login';
-                } catch (err) {
-                    alert(err);
-                }
-            };
+                let backButton = document.getElementById('backButton');
+                backButton.onclick = function () {
+                    window.location.href = `/actions`;
+                };
+            } catch (err) {
+                alert(err);
+            }
         }
     </script>
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Add professor </h2>
+<div align="center" style="margin-top: 100px;">
+    <h2> Добавить профессора </h2>
     <form name="add professor">
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="firstName">FirstName</label> <input autocomplete="off" autofocus class="text-field"
-                                                            id="firstName" style="margin-right: 70px" type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="firstName">Имя</label> <input autocomplete="off" autofocus id="firstName"
+                                                      style="margin-right: 30px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="secondName">SecondName</label> <input autocomplete="off" class="text-field" id="secondName"
-                                                              style="margin-right: 88px" type="text"/>
+        <div style="margin-bottom: 15px">
+            <label for="secondName">Фамилия</label> <input autocomplete="off" id="secondName" style="margin-right: 64px"
+                                                           type="text"/>
         </div>
-        <div class="form-group">
-            <input class="btn btn-lg btn-success" id="addProfessorButton" type="button" value="Add"/>
-            <input class="btn btn-lg btn-danger" id="logOut" type="button" value="Log out"/>
+        <div>
+            <input id="backButton" type="button" value="Назад"/>
+            <input id="addProfessorButton" type="button" value="Добавить"/>
         </div>
     </form>
 </div>

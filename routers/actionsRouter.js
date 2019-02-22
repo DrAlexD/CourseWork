@@ -17,6 +17,27 @@ actionsRouter.get('/', (req, res) => {
     res.end();
 });
 
+actionsRouter.get('/session/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        res.send(JSON.stringify(req.session.username));
+        res.end();
+    } else {
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+actionsRouter.get('/logout', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        console.log(`Success log out: ${req.session.username.userType}`);
+        req.session.destroy();
+        res.end();
+    } else {
+        res.redirect('/login');
+        res.end();
+    }
+});
+
 actionsRouter.get('/login', (req, res) => {
     if (typeof req.session.username == 'undefined')
         res.sendFile(path.join(__filename, '../../pages/log_in_page.html'));
@@ -30,8 +51,11 @@ actionsRouter.post('/login', (req, res) => {
     if (req.body.username !== "" && req.body.password !== "") {
         if (req.body.username === "admin") {
             if (req.body.password === "admin") {
-                req.session.username = "admin";
-                console.log(`Success log in: ${req.session.username}`);
+                req.session.username = {
+                    userType: "admin",
+                    userId: "0"
+                };
+                console.log(`Success log in: ${req.session.username.userType}`);
                 res.end();
             } else {
                 res.status(404).send(JSON.stringify("Wrong password for user: admin"));
@@ -43,18 +67,24 @@ actionsRouter.post('/login', (req, res) => {
                         console.error(err);
                     else {
                         if (typeof result[0] != 'undefined') {
-                            req.session.username = req.body.username;
-                            console.log(`Success log in: ${req.session.username}`);
+                            req.session.username = {
+                                userType: "student",
+                                userId: result[0].studentid
+                            };
+                            console.log(`Success log in: ${result[0].login}`);
                             res.end();
                         } else {
                             con.query(`SELECT * FROM professor WHERE login='${req.body.username}' AND password='${req.body.password}'`,
-                                function (err, result) {
-                                    if (err)
-                                        console.error(err);
+                                function (err2, result2) {
+                                    if (err2)
+                                        console.error(err2);
                                     else {
-                                        if (typeof result[0] != 'undefined') {
-                                            req.session.username = req.body.username;
-                                            console.log(`Success log in: ${req.session.username}`);
+                                        if (typeof result2[0] != 'undefined') {
+                                            req.session.username = {
+                                                userType: "professor",
+                                                userId: result2[0].professorid
+                                            };
+                                            console.log(`Success log in: ${result2[0].login}`);
                                             res.end();
                                         } else {
                                             res.status(404).send(JSON.stringify("Wrong login or password"));
@@ -74,35 +104,8 @@ actionsRouter.post('/login', (req, res) => {
 
 actionsRouter.get('/actions', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        if (req.session.username === "admin") {
-            res.sendFile(path.join(__filename, '../../pages/actions_page.html'));
-        } else {
-            con.query(`SELECT * FROM student WHERE login='${req.session.username}'`,
-                function (err, result) {
-                    if (err)
-                        console.error(err);
-                    else {
-                        if (typeof result[0] != 'undefined') {
-                            res.redirect(`/student/${result[0].studentId}`);
-                            res.end();
-                        } else {
-                            con.query(`SELECT * FROM professor WHERE login='${req.session.username}'`,
-                                function (err, result) {
-                                    if (err)
-                                        console.error(err);
-                                    else {
-                                        if (typeof result[0] != 'undefined') {
-                                            res.redirect(`/professor/${result[0].professorId}`);
-                                            res.end();
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            );
-        }
+        res.sendFile(path.join(__filename, '../../pages/actions_page.html'));
+        res.end();
     } else {
         res.redirect('/login');
         res.end();
@@ -111,11 +114,8 @@ actionsRouter.get('/actions', (req, res) => {
 
 actionsRouter.get('/add/student', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        if (req.session.username !== "admin") {
-            res.redirect('/actions');
-            res.end();
-        } else
-            res.sendFile(path.join(__filename, '../../pages/add_student_page.html'));
+        res.sendFile(path.join(__filename, '../../pages/add_student_page.html'));
+        res.end();
     } else {
         res.redirect('/login');
         res.end();
@@ -159,11 +159,8 @@ actionsRouter.post('/add/student', (req, res) => {
 
 actionsRouter.get('/students', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        if (req.session.username !== "admin") {
-            res.redirect('/actions');
-            res.end();
-        } else
-            res.sendFile(path.join(__filename, '../../pages/students_page.html'));
+        res.sendFile(path.join(__filename, '../../pages/students_page.html'));
+        res.end();
     } else {
         res.redirect('/login');
         res.end();
@@ -172,24 +169,19 @@ actionsRouter.get('/students', (req, res) => {
 
 actionsRouter.get('/students/all.json', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        if (req.session.username !== "admin") {
-            res.redirect('/actions');
-            res.end();
-        } else {
-            con.query(`SELECT * FROM student`,
-                function (err, result) {
-                    if (err)
-                        console.error(err);
-                    else {
-                        if (typeof result[0] != 'undefined') {
-                            res.status(200).send(JSON.stringify(result));
-                        } else {
-                            res.status(404).send(JSON.stringify(`Not found students`));
-                        }
+        con.query(`SELECT * FROM student`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.status(200).send(JSON.stringify(result));
+                    } else {
+                        res.status(404).send(JSON.stringify(`Not found students`));
                     }
                 }
-            );
-        }
+            }
+        );
     } else {
         res.redirect('/login');
         res.end();
@@ -314,11 +306,8 @@ actionsRouter.post('/students', (req, res) => {
 
 actionsRouter.get('/add/professor', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        if (req.session.username !== "admin") {
-            res.redirect('/actions');
-            res.end();
-        } else
-            res.sendFile(path.join(__filename, '../../pages/add_professor_page.html'));
+        res.sendFile(path.join(__filename, '../../pages/add_professor_page.html'));
+        res.end();
     } else {
         res.redirect('/login');
         res.end();
@@ -361,11 +350,8 @@ actionsRouter.post('/add/professor', (req, res) => {
 
 actionsRouter.get('/professors', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        if (req.session.username !== "admin") {
-            res.redirect('/actions');
-            res.end();
-        } else
-            res.sendFile(path.join(__filename, '../../pages/professors_page.html'));
+        res.sendFile(path.join(__filename, '../../pages/professors_page.html'));
+        res.end();
     } else {
         res.redirect('/login');
         res.end();
@@ -374,24 +360,19 @@ actionsRouter.get('/professors', (req, res) => {
 
 actionsRouter.get('/professors/all.json', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        if (req.session.username !== "admin") {
-            res.redirect('/actions');
-            res.end();
-        } else {
-            con.query(`SELECT * FROM professor`,
-                function (err, result) {
-                    if (err)
-                        console.error(err);
-                    else {
-                        if (typeof result[0] != 'undefined') {
-                            res.status(200).send(JSON.stringify(result));
-                        } else {
-                            res.status(404).send(JSON.stringify(`Not found professors`));
-                        }
+        con.query(`SELECT * FROM professor`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.status(200).send(JSON.stringify(result));
+                    } else {
+                        res.status(404).send(JSON.stringify(`Not found professors`));
                     }
                 }
-            );
-        }
+            }
+        );
     } else {
         res.redirect('/login');
         res.end();

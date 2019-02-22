@@ -59,12 +59,4 @@ app.use('/', actionsRouter);
 app.use('/student', studentRouter);
 app.use('/professor', professorRouter);
 
-app.get('/logout', (req, res) => {
-    if (typeof req.session.username != 'undefined') {
-        console.log(`Success log out: ${req.session.username}`);
-        sessionStore.clear();
-        res.end();
-    }
-});
-
 app.listen(port, () => console.log(`Server has been started on port ${port}!`));
