@@ -21,7 +21,7 @@
                 if (response.ok) {
                     resText = await response.json();
                     document.getElementById('courseWorksTable').hidden = false;
-                    let courseWorksButtons = document.getElementById('courseWorks');
+                    let courseWorksButtons = document.getElementById('courseWorksButtons');
                     courseWorksButtons.innerHTML = "";
                     for (let i = 0; i < resText.length; i++) {
                         courseWorksButtons.innerHTML += "<tr>\n" +
@@ -70,10 +70,10 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
+<div align="center" style="margin-top: 100px">
     <h2> Professor </h2>
     <form name="professor">
-        <div class="form-group" style="margin-bottom: 10px">
+        <div style="margin-bottom: 10px">
             <label id="firstName"></label> <label id="secondName"></label>
         </div>
         <table bgcolor="#f0f8ff" hidden id="courseWorksTable" style="text-align:center; margin-bottom: 15px">
@@ -82,16 +82,16 @@
                 <th>Head of courseWorks</th>
             </tr>
             </thead>
-            <tbody id="courseWorks">
+            <tbody id="courseWorksButtons">
             </tbody>
         </table>
-        <div class="form-group" style="margin-bottom: 10px">
-            <input class="btn btn-lg btn-danger" id="logOutButton" type="button" value="Log out"/>
-            <input class="btn btn-lg btn-danger" id="editButton" type="button" value="Edit"/>
-            <input class="btn btn-lg btn-danger" id="deleteButton" type="button" value="Delete"/>
+        <div style="margin-bottom: 10px">
+            <input id="logOutButton" type="button" value="Log out"/>
+            <input id="editButton" type="button" value="Edit"/>
+            <input id="deleteButton" type="button" value="Delete"/>
         </div>
-        <div class="form-group">
-            <input class="btn btn-lg btn-danger" id="backButton" type="button" value="Back"/>
+        <div>
+            <input id="backButton" type="button" value="Back"/>
         </div>
     </form>
 </div>

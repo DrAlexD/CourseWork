@@ -29,8 +29,7 @@
                 await getAllProfessors();
 
                 let searchButton = document.getElementById('searchButton');
-                let allProfessorsButton = document.getElementById('allProfessorsButton');
-                let inputs = document.getElementsByClassName('text-field');
+                let inputs = document.getElementsByTagName('input');
 
                 searchButton.onclick = async function () {
                     let professorData = {
@@ -48,9 +47,10 @@
                     let resText = await response.json();
 
                     if (response.ok) {
-                        document.getElementById("professors").innerHTML = "";
+                        let professorsTable = document.getElementById("professors");
+                        professorsTable.innerHTML = "";
                         for (let i = 0; i < resText.length; i++) {
-                            document.getElementById("professors").innerHTML += "<tr>\n" +
+                            professorsTable.innerHTML += "<tr>\n" +
                                 `                <td>${resText[i].firstName}</td>\n` +
                                 `                <td>${resText[i].secondName}</td>\n` +
                                 "                <td><input type='button' value='Professor page'\n" +
@@ -61,8 +61,14 @@
                         alert(resText);
                 };
 
+                let allProfessorsButton = document.getElementById('allProfessorsButton');
                 allProfessorsButton.onclick = async function () {
                     await getAllProfessors();
+                };
+
+                let backButton = document.getElementById('backButton');
+                backButton.onclick = function () {
+                    window.location.href = `/actions`;
                 };
             } catch (err) {
                 alert(err);
@@ -72,22 +78,23 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
+<div align="center" style="margin-top: 100px">
     <h2> Professors </h2>
-    <div class="form-group">
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="searchFirstName">FirstName</label> <input autocomplete="off" autofocus class="text-field"
-                                                                  id="searchFirstName" style="margin-right: 65px"
-                                                                  type="text"/>
+    <form name="professors">
+        <div style="margin-bottom: 5px">
+            <label for="searchFirstName">FirstName</label> <input autocomplete="off" autofocus id="searchFirstName"
+                                                                  style="margin-right: 65px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="searchSecondName">SecondName</label> <input autocomplete="off" class="text-field"
-                                                                    id="searchSecondName"
+        <div style="margin-bottom: 5px">
+            <label for="searchSecondName">SecondName</label> <input autocomplete="off" id="searchSecondName"
                                                                     style="margin-right: 82px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 30px">
-            <input class="btn" id="searchButton" type="button" value="Search"/>
-            <input class="btn" id="allProfessorsButton" type="button" value="All professors"/>
+        <div style="margin-bottom: 10px">
+            <input id="searchButton" type="button" value="Search"/>
+        </div>
+        <div style="margin-bottom: 15px">
+            <input id="backButton" type="button" value="Back"/>
+            <input id="allProfessorsButton" type="button" value="All professors"/>
         </div>
         <table bgcolor="#f0f8ff" style="text-align:center" width="300px">
             <thead>
@@ -100,7 +107,7 @@
             <tbody id="professors">
             </tbody>
         </table>
-    </div>
+    </form>
 </div>
 </body>
 </html>

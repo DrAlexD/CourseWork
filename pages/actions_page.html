@@ -6,9 +6,9 @@
     <script>
         "use strict";
         window.onload = function () {
-            let logOut = document.getElementById('logOut');
 
-            logOut.onclick = async function () {
+            let logOutButton = document.getElementById('logOutButton');
+            logOutButton.onclick = async function () {
                 try {
                     await fetch('/logout');
                     window.location.href = '/login';
@@ -21,28 +21,22 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
+<div align="center" style="margin-top: 100px">
     <h2> Actions </h2>
     <form name="actions">
-        <div class="form-group" style="margin-bottom: 15px">
-            <input class="btn btn-lg btn-success" id="addStudentPageButton"
-                   onclick="window.location.href = '/add/student';" type="button"
+        <div style="margin-bottom: 10px">
+            <input id="addStudentPageButton" onclick="window.location.href = '/add/student'" type="button"
                    value="Add student"/>
-            <input class="btn btn-lg btn-danger" id="studentsPageButton" onclick="window.location.href = '/students';"
-                   type="button"
-                   value="Students"/>
+            <input id="studentsPageButton" onclick="window.location.href = '/students'" type="button" value="Students"/>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <input class="btn btn-lg btn-success" id="addProfessorPageButton"
-                   onclick="window.location.href = '/add/professor';" type="button"
+        <div style="margin-bottom: 15px">
+            <input id="addProfessorPageButton" onclick="window.location.href = '/add/professor'" type="button"
                    value="Add professor"/>
-            <input class="btn btn-lg btn-danger" id="professorsPageButton"
-                   onclick="window.location.href = '/professors';"
-                   type="button"
+            <input id="professorsPageButton" onclick="window.location.href = '/professors';" type="button"
                    value="Professors"/>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <input class="btn btn-lg btn-danger" id="logOut" type="button" value="Log out"/>
+        <div>
+            <input id="logOutButton" type="button" value="Log out"/>
         </div>
     </form>
 </div>

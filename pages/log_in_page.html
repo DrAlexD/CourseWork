@@ -6,18 +6,15 @@
     <script>
         "use strict";
         window.onload = function () {
-            let logIn = document.getElementById('logIn');
+            let logInButton = document.getElementById('logInButton');
             let inputs = document.getElementsByTagName('input');
 
-            logIn.onclick = async function () {
+            logInButton.onclick = async function () {
                 try {
                     let userData = {
                         username: inputs[0].value,
                         password: inputs[1].value,
                     };
-
-                    //let data = new FormData();
-                    //data.append("json", JSON.stringify(user));
 
                     let options = {
                         method: 'POST',
@@ -27,9 +24,9 @@
 
                     let response = await fetch('/login', options);
 
-                    if (response.ok)
+                    if (response.ok) {
                         window.location.href = '/actions';
-                    else {
+                    } else {
                         let resText = await response.json();
                         alert(resText);
                     }
@@ -38,49 +35,22 @@
                 }
             };
         }
-        /*window.onload = function () {
-            let logIn = document.getElementById('logIn');
-            let inputs = document.getElementsByTagName('input');
-
-            logIn.onclick = function () {
-                let xhr = new XMLHttpRequest();
-
-                xhr.open('POST', '/login');
-                let userData = {
-                    username: inputs[0].value,
-                    password: inputs[1].value,
-                };
-
-                xhr.setRequestHeader('Content-Type', 'application/json');
-
-                xhr.send(JSON.stringify(userData));
-
-                xhr.onload = function () {
-                    window.location.href = '/actions';
-                };
-
-                xhr.onerror = function () {
-                    alert('Server error!');
-                }
-            };
-        }*/
     </script>
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
+<div align="center" style="margin-top: 100px">
     <h2> Log in </h2>
     <form name="logIn">
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="username">Username</label> <input autofocus class="text-field" id="username"
-                                                          style="margin-right: 50px" type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="username">Username</label> <input autofocus id="username" style="margin-right: 50px"
+                                                          type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <label for="password">Password</label> <input class="text-field" id="password" style="margin-right: 47px"
-                                                          type="password"/>
+        <div style="margin-bottom: 15px">
+            <label for="password">Password</label> <input id="password" style="margin-right: 47px" type="password"/>
         </div>
-        <div class="form-group">
-            <input class="btn btn-lg btn-success" id="logIn" type="button" value="Log in"/>
+        <div>
+            <input id="logInButton" type="button" value="Log in"/>
         </div>
     </form>
 </div>
