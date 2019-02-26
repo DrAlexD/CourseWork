@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student</title>
+    <title>Студент</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -10,8 +10,23 @@
                 let loc = window.location.href.split("/");
                 let locId = loc[loc.length - 1];
 
-                let response = await fetch(`/student/${locId}/info.json`);
+                let response = await fetch(`/session/info.json`);
                 let resText = await response.json();
+
+                if (resText.userType === "student") {
+                    document.getElementById("backButton").hidden = true;
+                    document.getElementById("deleteButton").hidden = true;
+                    document.getElementById("addCourseWork").hidden = true;
+                }
+
+                if (resText.userType === "professor") {
+                    document.getElementById("addCourseWork").hidden = true;
+                    document.getElementById("deleteButton").hidden = true;
+                    document.getElementById("editButton").hidden = true;
+                }
+
+                response = await fetch(`/student/${locId}/info.json`);
+                resText = await response.json();
 
                 document.getElementById("firstName").innerText = resText.firstName;
                 document.getElementById("secondName").innerText = resText.secondName;
@@ -77,7 +92,7 @@
 
 <body>
 <div align="center" style="margin-top: 100px">
-    <h2> Student </h2>
+    <h2> Студент </h2>
     <form name="student">
         <div style="margin-bottom: 5px">
             <label id="firstName"></label> <label id="secondName"></label>
@@ -88,22 +103,22 @@
         <table bgcolor="#f0f8ff" hidden id="courseWorksTable" style="text-align:center; margin-bottom: 5px">
             <thead>
             <tr>
-                <th>CourseWorks</th>
+                <th>Курсовые работы</th>
             </tr>
             </thead>
             <tbody id="courseWorksButtons">
             </tbody>
         </table>
         <div style="margin-bottom: 15px">
-            <input id="addCourseWorkButton" type="button" value="Add courseWork"/>
+            <input id="addCourseWorkButton" type="button" value="Добавить курсовую работу"/>
         </div>
         <div style="margin-bottom: 10px">
-            <input id="logOutButton" type="button" value="Log out"/>
-            <input id="editButton" type="button" value="Edit"/>
-            <input id="deleteButton" type="button" value="Delete"/>
+            <input id="logOutButton" type="button" value="Выйти"/>
+            <input id="editButton" type="button" value="Редактировать"/>
+            <input id="deleteButton" type="button" value="Удалить"/>
         </div>
         <div>
-            <input id="backButton" type="button" value="Back"/>
+            <input id="backButton" type="button" value="Назад"/>
         </div>
     </form>
 </div>

@@ -15,8 +15,8 @@
                 }
 
                 let getAllProfessors = async function () {
-                    let response = await fetch(`/professors/all.json`);
-                    let resText = await response.json();
+                    response = await fetch(`/professors/all.json`);
+                    resText = await response.json();
                     if (response.ok) {
                         let professorsTable = document.getElementById("professors");
                         professorsTable.innerHTML = "";
@@ -35,9 +35,9 @@
 
                 await getAllProfessors();
 
-                let searchButton = document.getElementById('searchButton');
                 let inputs = document.getElementsByTagName('input');
 
+                let searchButton = document.getElementById('searchButton');
                 searchButton.onclick = async function () {
                     let professorData = {
                         firstName: inputs[0].value,
@@ -50,8 +50,8 @@
                         body: JSON.stringify(professorData)
                     };
 
-                    let response = await fetch('/professors', options);
-                    let resText = await response.json();
+                    response = await fetch('/professors', options);
+                    resText = await response.json();
 
                     if (response.ok) {
                         let professorsTable = document.getElementById("professors");

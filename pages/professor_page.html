@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Professor</title>
+    <title>Профессор</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -10,8 +10,20 @@
                 let loc = window.location.href.split("/");
                 let locId = loc[loc.length - 1];
 
-                let response = await fetch(`/professor/${locId}/info.json`);
+                let response = await fetch(`/session/info.json`);
                 let resText = await response.json();
+
+                if (resText.userType === "student") {
+                    window.location.href = `/student/${resText.userId}`;
+                }
+
+                if (resText.userType === "professor") {
+                    document.getElementById("deleteButton").hidden = true;
+                }
+
+
+                response = await fetch(`/professor/${locId}/info.json`);
+                resText = await response.json();
 
                 document.getElementById("firstName").innerText = resText.firstName;
                 document.getElementById("secondName").innerText = resText.secondName;
@@ -71,7 +83,7 @@
 
 <body>
 <div align="center" style="margin-top: 100px">
-    <h2> Professor </h2>
+    <h2> Профессор </h2>
     <form name="professor">
         <div style="margin-bottom: 10px">
             <label id="firstName"></label> <label id="secondName"></label>
@@ -79,19 +91,19 @@
         <table bgcolor="#f0f8ff" hidden id="courseWorksTable" style="text-align:center; margin-bottom: 15px">
             <thead>
             <tr>
-                <th>Head of courseWorks</th>
+                <th>Руководитель курсовых работ</th>
             </tr>
             </thead>
             <tbody id="courseWorksButtons">
             </tbody>
         </table>
         <div style="margin-bottom: 10px">
-            <input id="logOutButton" type="button" value="Log out"/>
-            <input id="editButton" type="button" value="Edit"/>
-            <input id="deleteButton" type="button" value="Delete"/>
+            <input id="logOutButton" type="button" value="Выйти"/>
+            <input id="editButton" type="button" value="Редактировать"/>
+            <input id="deleteButton" type="button" value="Удалить"/>
         </div>
         <div>
-            <input id="backButton" type="button" value="Back"/>
+            <input id="backButton" type="button" value="Назад"/>
         </div>
     </form>
 </div>

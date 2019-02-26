@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Protection edit</title>
+    <title>Редактировать защиту</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -12,8 +12,23 @@
                 let locCode = loc[loc.length - 4];
                 let locDate = loc[loc.length - 2];
 
-                let response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/info.json`);
+                let response = await fetch(`/session/info.json`);
                 let resText = await response.json();
+
+                if (resText.userType === "student") {
+                    window.location.href = `/student/${locId}/coursework/${locCode}/protection/${locDate}`;
+                }
+
+                if (resText.userType === "professor") {
+                    document.getElementById("isMainProtection").disabled = true;
+                }
+
+                if (resText.userType === "admin") {
+                    document.getElementById("finalEvaluation").disabled = true;
+                }
+
+                response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/info.json`);
+                resText = await response.json();
 
                 document.getElementById("date").innerText = (parseInt(resText.date.split("T")[0].split("-")[2]) + 1).toString() +
                     "-" + resText.date.split("T")[0].split("-")[1] + "-" +
@@ -27,32 +42,35 @@
                     document.getElementById("finalEvaluation").value = resText.finalEvaluation;
                 }
 
-                let backButton = document.getElementById('backButton');
-                let saveButton = document.getElementById('saveButton');
                 let inputs = document.getElementsByTagName('input');
 
+                let saveButton = document.getElementById('saveButton');
                 saveButton.onclick = async function () {
+                    let evaluation = inputs[1].value;
+                    if (evaluation === "" || evaluation == 0 || (evaluation >= 2 && evaluation <= 5)) {
+                        let protectionData = {
+                            isMainProtection: inputs[0].checked,
+                            evaluation: evaluation
+                        };
 
-                    let protectionData = {
-                        isMainProtection: inputs[0].checked,
-                        finalEvaluation: inputs[1].value
-                    };
+                        let options = {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(protectionData)
+                        };
 
-                    let options = {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(protectionData)
-                    };
+                        response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/edit`, options);
 
-                    response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/edit`, options);
-
-                    window.location.href = `/student/${locId}/coursework/${locCode}/protection/${locDate}`;
+                        window.location.href = `/student/${locId}/coursework/${locCode}/protection/${locDate}`;
+                    } else {
+                        alert("Не правильный диапазон оценки");
+                    }
                 };
 
+                let backButton = document.getElementById('backButton');
                 backButton.onclick = function () {
                     window.location.href = `/student/${locId}/coursework/${locCode}/protection/${locDate}`;
                 };
-
             } catch (err) {
                 alert(err);
             }
@@ -61,27 +79,23 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Protection edit</h2>
+<div align="center" style="margin-top: 100px">
+    <h2> Редактировать защиту </h2>
     <form name="protection edit">
-        <div class="form-group" style="margin-bottom: 5px">
-            <label>Дата:</label> <label id="date"></label>
+        <div style="margin-bottom: 5px">
+            <label>Дата:</label> <label id="date" style="margin-right: 125px"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="isMainProtection">IsMainProtection</label> <input autocomplete="off"
-                                                                          class="text-field"
-                                                                          id="isMainProtection"
-                                                                          style="margin-right: 301px"
-                                                                          type="checkbox"/>
+        <div style="margin-bottom: 5px">
+            <label for="isMainProtection">Главная защита</label> <input autocomplete="off" id="isMainProtection"
+                                                                        style="margin-right:257px" type="checkbox"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="finalEvaluation">FinalEvaluation</label> <input autocomplete="off" class="text-field"
-                                                                        id="finalEvaluation"
-                                                                        style="margin-right: 101px" type="number"/>
+        <div style="margin-bottom: 5px">
+            <label for="finalEvaluation">Оценка(2-5)</label> <input autocomplete="off" id="finalEvaluation"
+                                                                    style="margin-right: 87px" type="number"/>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <input class="btn btn-lg btn-success" id="backButton" type="button" value="Back"/>
-            <input class="btn btn-lg btn-success" id="saveButton" type="button" value="Save"/>
+        <div style="margin-bottom: 15px">
+            <input id="backButton" type="button" value="Назад"/>
+            <input id="saveButton" type="button" value="Сохранить"/>
         </div>
     </form>
 </div>

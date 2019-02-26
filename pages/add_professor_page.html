@@ -17,9 +17,9 @@
                     window.location.href = `/actions`;
                 }
 
-                let addProfessorButton = document.getElementById('addProfessorButton');
                 let inputs = document.getElementsByTagName('input');
 
+                let addProfessorButton = document.getElementById('addProfessorButton');
                 addProfessorButton.onclick = async function () {
                     let professorData = {
                         firstName: inputs[0].value,

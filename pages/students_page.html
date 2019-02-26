@@ -15,8 +15,8 @@
                 }
 
                 let getAllStudents = async function () {
-                    let response = await fetch(`/students/all.json`);
-                    let resText = await response.json();
+                    response = await fetch(`/students/all.json`);
+                    resText = await response.json();
                     if (response.ok) {
                         let studentsTable = document.getElementById("students");
                         studentsTable.innerHTML = "";
@@ -36,9 +36,9 @@
 
                 await getAllStudents();
 
-                let searchButton = document.getElementById('searchButton');
                 let inputs = document.getElementsByTagName('input');
 
+                let searchButton = document.getElementById('searchButton');
                 searchButton.onclick = async function () {
                     let studentData = {
                         firstName: inputs[0].value,
@@ -52,8 +52,8 @@
                         body: JSON.stringify(studentData)
                     };
 
-                    let response = await fetch('/students', options);
-                    let resText = await response.json();
+                    response = await fetch('/students', options);
+                    resText = await response.json();
 
                     if (response.ok) {
                         let studentsTable = document.getElementById("students");

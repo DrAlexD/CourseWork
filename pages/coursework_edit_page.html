@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CourseWork edit</title>
+    <title>Редактироать курсовую работу</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -11,8 +11,25 @@
                 let locId = loc[loc.length - 4];
                 let locCode = loc[loc.length - 2];
 
-                let response = await fetch(`/student/${locId}/coursework/${locCode}/info.json`);
+                let response = await fetch(`/session/info.json`);
                 let resText = await response.json();
+
+                if (resText.userType === "student") {
+                    document.getElementById("deleteButton").disabled = true;
+                    document.getElementById("year").disabled = true;
+                    document.getElementById("headFirstName").disabled = true;
+                    document.getElementById("headSecondName").disabled = true;
+                    document.getElementById("isConfirmedTaskText").disabled = true;
+                    document.getElementById("admittanceToProtection").disabled = true;
+                    document.getElementById("finalEvaluation").disabled = true;
+                }
+
+                if (resText.userType === "professor") {
+                    window.location.href = `/student/${locId}/coursework/${locCode}`;
+                }
+
+                response = await fetch(`/student/${locId}/coursework/${locCode}/info.json`);
+                resText = await response.json();
 
                 document.getElementById("title").value = resText.title;
                 document.getElementById("year").value = resText.year;
@@ -47,16 +64,10 @@
                     document.getElementById("finalEvaluation").value = resText.finalEvaluation;
                 }
 
-                let saveButton = document.getElementById("saveButton");
-                let backButton = document.getElementById("backButton");
                 let inputs = document.getElementsByTagName('input');
 
-                backButton.onclick = function () {
-                    window.location.href = `/student/${locId}/coursework/${locCode}`;
-                };
-
+                let saveButton = document.getElementById("saveButton");
                 saveButton.onclick = async function () {
-
                     let courseWorkData = {
                         title: inputs[0].value,
                         year: inputs[1].value,
@@ -82,9 +93,14 @@
                     if (response.ok)
                         window.location.href = `/student/${locId}/coursework/${locCode}`;
                     else {
-                        let resText = await response.json();
+                        resText = await response.json();
                         alert(resText);
                     }
+                };
+
+                let backButton = document.getElementById("backButton");
+                backButton.onclick = function () {
+                    window.location.href = `/student/${locId}/coursework/${locCode}`;
                 };
             } catch (err) {
                 alert(err);
@@ -94,69 +110,61 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> CourseWork edit </h2>
+<div align="center" style="margin-top: 100px">
+    <h2> Редактировать курсовую работу </h2>
     <form name="courseWork edit">
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="title">Title</label> <input autocomplete="off" autofocus class="text-field" id="title"
-                                                    style="margin-right: 32px" type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="title">Название</label> <input autocomplete="off" autofocus id="title"
+                                                       style="margin-right: 65px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="year">Year</label> <input autocomplete="off" class="text-field" id="year"
-                                                  style="margin-right: 31px" type="number"/>
+        <div style="margin-bottom: 5px">
+            <label for="year">Год</label> <input autocomplete="off" id="year" style="margin-right: 25px" type="number"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="headFirstName">HeadFirstName</label> <input autocomplete="off" class="text-field"
-                                                                    id="headFirstName"
-                                                                    style="margin-right: 103px" type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="headFirstName">Имя руководителя</label> <input autocomplete="off" id="headFirstName"
+                                                                       style="margin-right: 126px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="headSecondName">HeadSecondName</label> <input autocomplete="off" class="text-field"
-                                                                      id="headSecondName"
-                                                                      style="margin-right: 120px" type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="headSecondName">Фамилия руководителя</label> <input autocomplete="off" id="headSecondName"
+                                                                            style="margin-right: 160px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="taskText" style="margin-left: 32px">TaskText</label> <input autocomplete="off"
-                                                                                    class="file-field" id="taskText"
-                                                                                    type="file"/>
+        <div style="margin-bottom: 5px">
+            <label for="taskText" style="margin-left: 72px">ТЗ</label> <input autocomplete="off" id="taskText"
+                                                                              type="file"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="isConfirmedTaskText">IsConfirmedTaskText</label> <input autocomplete="off" class="text-field"
-                                                                                id="isConfirmedTaskText"
-                                                                                style="margin-right: 285px"
-                                                                                type="checkbox"/>
+        <div style="margin-bottom: 5px">
+            <label for="isConfirmedTaskText">Подтверждение ТЗ</label> <input autocomplete="off" id="isConfirmedTaskText"
+                                                                             style="margin-right: 275px"
+                                                                             type="checkbox"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="currentNote" style="margin-left: 11px">CurrentNote</label> <input autocomplete="off"
-                                                                                          class="text-field"
-                                                                                          id="currentNote"
+        <div style="margin-bottom: 5px">
+            <label for="currentNote">Текущая записка</label> <input autocomplete="off" id="currentNote"
+                                                                    style="margin-right: 25px"
+                                                                    type="file"/>
+        </div>
+        <div style="margin-bottom: 5px">
+            <label for="linkToCode" style="margin-left: 28px">Ссылка на код</label> <input autocomplete="off"
+                                                                                           id="linkToCode" size="40"
+                                                                                           type="text"/>
+        </div>
+        <div style="margin-bottom: 5px">
+            <label for="presentation" style="margin-left: 4px">Презентация</label> <input autocomplete="off"
+                                                                                          id="presentation"
                                                                                           type="file"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="linkToCode">LinkToCode</label> <input autocomplete="off" class="text-field" id="linkToCode"
-                                                              size="40" style="margin-right: 81px" type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="admittanceToProtection">Разрешение на защиту</label> <input autocomplete="off"
+                                                                                    id="admittanceToProtection"
+                                                                                    style="margin-right: 300px"
+                                                                                    type="checkbox"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="presentation" style="margin-left: 13px">Presentation</label> <input autocomplete="off"
-                                                                                            class="text-field"
-                                                                                            id="presentation"
-                                                                                            type="file"/>
+        <div style="margin-bottom: 5px">
+            <label for="finalEvaluation">Оценка</label> <input autocomplete="off" id="finalEvaluation"
+                                                               style="margin-right: 50px" type="number"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="admittanceToProtection">AdmittanceToProtection</label> <input autocomplete="off"
-                                                                                      class="text-field"
-                                                                                      id="admittanceToProtection"
-                                                                                      style="margin-right: 301px"
-                                                                                      type="checkbox"/>
-        </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="finalEvaluation">FinalEvaluation</label> <input autocomplete="off" class="text-field"
-                                                                        id="finalEvaluation"
-                                                                        style="margin-right: 101px" type="number"/>
-        </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <input class="btn btn-lg btn-success" id="backButton" type="button" value="Back"/>
-            <input class="btn btn-lg btn-success" id="saveButton" type="button" value="Save"/>
+        <div style="margin-bottom: 15px">
+            <input id="backButton" type="button" value="Назад"/>
+            <input id="saveButton" type="button" value="Сохранить"/>
         </div>
     </form>
 </div>

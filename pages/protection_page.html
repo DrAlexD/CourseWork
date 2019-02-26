@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Protection</title>
+    <title>Защита</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -12,9 +12,20 @@
                 let locCode = loc[loc.length - 3];
                 let locDate = loc[loc.length - 1];
 
-                let response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/info.json`);
+                let response = await fetch(`/session/info.json`);
                 let resText = await response.json();
 
+                if (resText.userType === "student") {
+                    document.getElementById("deleteButton").hidden = true;
+                    document.getElementById("editButton").hidden = true;
+                }
+
+                if (resText.userType === "professor") {
+                    document.getElementById("deleteButton").hidden = true;
+                }
+
+                response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/info.json`);
+                resText = await response.json();
 
                 document.getElementById("date").innerText = (parseInt(resText.date.split("T")[0].split("-")[2]) + 1).toString() +
                     "-" + resText.date.split("T")[0].split("-")[1] + "-" +
@@ -28,6 +39,27 @@
                 if (resText.finalEvaluation !== null && resText.finalEvaluation !== 0 && resText.finalEvaluation !== "undefined") {
                     document.getElementsByClassName("finalEvaluation")[0].hidden = false;
                     document.getElementById("finalEvaluation").innerHTML = resText.finalEvaluation;
+                }
+
+                response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/evaluations/info.json`);
+
+                if (response.ok) {
+                    resText = await response.json();
+                    document.getElementById('evaluationsTable').hidden = false;
+                    let evaluationsButtons = document.getElementById('evaluationsButtons');
+                    evaluationsButtons.innerHTML = "";
+                    for (let i = 0; i < resText.length; i++) {
+                        response = await fetch(`/professor/${resText[i].professorId}/info.json`);
+                        let professor = await response.json();
+                        evaluationsButtons.innerHTML += "<tr>\n" +
+                            "                <td>\n" +
+                            `                    ${professor.firstName} ${professor.secondName}\n` +
+                            "                </td>\n" +
+                            "                <td>\n" +
+                            `                    ${resText[i].evaluation}\n` +
+                            "                </td>\n" +
+                            "            </tr>";
+                    }
                 }
 
                 let editButton = document.getElementById('editButton');
@@ -49,16 +81,6 @@
                         alert(err);
                     }
                 };
-
-                let logOutButton = document.getElementById('logOutButton');
-                logOutButton.onclick = async function () {
-                    try {
-                        await fetch('/logout');
-                        window.location.href = '/login';
-                    } catch (err) {
-                        alert(err);
-                    }
-                };
             } catch (err) {
                 alert(err);
             }
@@ -67,30 +89,35 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Protection </h2>
+<div align="center" style="margin-top: 100px;">
+    <h2> Защита </h2>
     <form name="protection">
-        <div class="form-group" style="margin-bottom: 5px">
+        <div style="margin-bottom: 5px">
             <label>Дата:</label> <label id="date"></label>
         </div>
         <div class="isMainProtection" hidden style="margin-bottom: 5px">
-            <label for="isMainProtection">IsMainProtection</label> <input autocomplete="off"
-                                                                          class="text-field"
-                                                                          disabled
-                                                                          id="isMainProtection"
-                                                                          style="margin-right: 301px"
-                                                                          type="checkbox"/>
+            <label for="isMainProtection">Главная защита</label> <input autocomplete="off" disabled
+                                                                        id="isMainProtection" type="checkbox"/>
         </div>
-        <div class="finalEvaluation" hidden style="margin-bottom: 10px">
-            <label id="finalEvaluation"></label>
+        <div class="finalEvaluation" hidden style="margin-bottom: 15px">
+            <label>Оценка:</label> <label id="finalEvaluation"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 10px">
-            <input class="btn btn-lg btn-danger" id="logOutButton" type="button" value="Log out"/>
-            <input class="btn btn-lg btn-danger" id="editButton" type="button" value="Edit"/>
-            <input class="btn btn-lg btn-danger" id="deleteButton" type="button" value="Delete"/>
+        <table bgcolor="#f0f8ff" hidden id="evaluationsTable" style="text-align:center; margin-bottom: 5px">
+            <thead>
+            <tr>
+                <th>Преподаватель</th>
+                <th>Оценка</th>
+            </tr>
+            </thead>
+            <tbody id="evaluationsButtons">
+            </tbody>
+        </table>
+        <div style="margin-bottom: 10px">
+            <input id="editButton" type="button" value="Редактировать"/>
+            <input id="deleteButton" type="button" value="Удалить"/>
         </div>
-        <div class="form-group">
-            <input class="btn btn-lg btn-danger" id="backButton" type="button" value="Back"/>
+        <div>
+            <input id="backButton" type="button" value="Назад"/>
         </div>
     </form>
 </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Consultation edit</title>
+    <title>Редактировать консультацию</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -12,24 +12,35 @@
                 let locCode = loc[loc.length - 4];
                 let locDate = loc[loc.length - 2];
 
-                let response = await fetch(`/student/${locId}/coursework/${locCode}/consultation/${locDate}/info.json`);
+                let response = await fetch(`/session/info.json`);
                 let resText = await response.json();
+
+                if (resText.userType === "student") {
+                    window.location.href = `/student/${locId}/coursework/${locCode}/consultation/${locDate}`;
+                }
+
+                if (resText.userType === "professor") {
+                    window.location.href = `/student/${locId}/coursework/${locCode}/consultation/${locDate}`;
+                }
+
+                response = await fetch(`/student/${locId}/coursework/${locCode}/consultation/${locDate}/info.json`);
+                resText = await response.json();
 
                 document.getElementById("date").innerText = (parseInt(resText.date.split("T")[0].split("-")[2]) + 1).toString() +
                     "-" + resText.date.split("T")[0].split("-")[1] + "-" +
                     resText.date.split("T")[0].split("-")[0];
 
                 if (resText.topic !== null && resText.topic !== "" && resText.topic !== "undefined") {
-                    //document.getElementById("topic").files = resText.topic;
+                    document.getElementById("topic").value = resText.topic;
                 }
 
-                let backButton = document.getElementById('backButton');
-                let saveButton = document.getElementById('saveButton');
+                let inputs = document.getElementsByTagName('input');
 
+                let saveButton = document.getElementById('saveButton');
                 saveButton.onclick = async function () {
 
                     let consultationData = {
-                        topic: document.getElementById("topic").files[0],
+                        topic: inputs[0].value
                     };
 
                     let options = {
@@ -43,10 +54,10 @@
                     window.location.href = `/student/${locId}/coursework/${locCode}/consultation/${locDate}`;
                 };
 
+                let backButton = document.getElementById('backButton');
                 backButton.onclick = function () {
                     window.location.href = `/student/${locId}/coursework/${locCode}/consultation/${locDate}`;
                 };
-
             } catch (err) {
                 alert(err);
             }
@@ -55,20 +66,18 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Consultation edit</h2>
+<div align="center" style="margin-top: 100px">
+    <h2> Редактировать консультацию</h2>
     <form name="consultation edit">
-        <div class="form-group" style="margin-bottom: 5px">
-            <label>Дата:</label> <label id="date"></label>
+        <div style="margin-bottom: 5px">
+            <label>Дата:</label> <label id="date" style="margin-right: 125px"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="topic" style="margin-left: 32px">Тема:</label> <input autocomplete="off"
-                                                                              class="file-field" id="topic"
-                                                                              type="file"/>
+        <div style="margin-bottom: 15px">
+            <label for="topic">Тема</label> <input autocomplete="off" id="topic" style="margin-right:37px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <input class="btn btn-lg btn-success" id="backButton" type="button" value="Back"/>
-            <input class="btn btn-lg btn-success" id="saveButton" type="button" value="Save"/>
+        <div style="margin-bottom: 5px">
+            <input id="backButton" type="button" value="Назад"/>
+            <input id="saveButton" type="button" value="Сохранить"/>
         </div>
     </form>
 </div>

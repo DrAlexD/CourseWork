@@ -21,23 +21,21 @@ professorRouter.get('/:id', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.sendFile(path.join(__filename, '../../pages/professor_page.html'));
-                        console.log(`Professor page, professor: ${result[0].login}`);
+                        res.end();
                     } else {
-                        console.log(`Not found professor`);
                         res.redirect('/actions');
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Professor page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
 });
 
 professorRouter.get('/:id/delete', (req, res) => {
-    console.log(`Success deleted professor`);
     con.query(`DELETE FROM professor WHERE professorId='${req.params.id}'`, err => {
         if (err) console.error(err);
         else res.end();
@@ -53,30 +51,32 @@ professorRouter.get('/:id/edit', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.sendFile(path.join(__filename, '../../pages/professor_edit_page.html'));
-                        console.log(`Professor_edit page, professor: ${result[0].login}`);
+                        res.end();
                     } else {
-                        console.log(`Not found professor`);
                         res.redirect('/professors');
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Professor_edit page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
 });
 
 professorRouter.post('/:id/edit', (req, res) => {
-    console.log(`Success edited professor: ${req.body.login}`);
     if (req.body.login !== "") {
-        con.query("UPDATE professor SET login" + `='${req.body.login}' WHERE professorId='${req.params.id}'`, err => {
-            if (err) {
-                console.error(err);
-                res.status(500).send(JSON.stringify("Copy of existing professor"));
-            }
-        });
+        if (req.body.login === "admin") {
+            res.status(500).send(JSON.stringify("Копия имеющегося админа"));
+        } else {
+            con.query("UPDATE professor SET login" + `='${req.body.login}' WHERE professorId='${req.params.id}'`, err => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send(JSON.stringify("Копия имеющегося профессора"));
+                }
+            });
+        }
     }
     if (req.body.firstName !== "") {
         con.query("UPDATE professor SET firstName" + `='${req.body.firstName}' WHERE professorId='${req.params.id}'`, err => {
@@ -107,13 +107,14 @@ professorRouter.get('/:id/info.json', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.send(JSON.stringify(result[0]));
+                        res.end();
                     } else {
-                        console.log(`Not found professor: ${result[0].login}`);
                         res.redirect('/actions');
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
         res.redirect('/login');
         res.end();
@@ -135,16 +136,19 @@ professorRouter.get('/:id/courseworks/info.json', (req, res) => {
                                 else {
                                     if (typeof result2[0] != 'undefined') {
                                         res.status(200).send(JSON.stringify(result2));
+                                        res.end();
                                     } else {
-                                        res.status(404).send("Not found courseWorks");
+                                        res.status(404).send("Не найдены курсовые работы");
                                     }
                                 }
-                            });
+                            }
+                        );
                     } else {
-                        res.status(404).send("Not found professor");
+                        res.status(404).send("Не найден профессор");
                     }
                 }
-            });
+            }
+        );
     } else {
         res.redirect('/login');
         res.end();

@@ -27,7 +27,7 @@
                 logOutButton.onclick = async function () {
                     await fetch('/logout');
                     window.location.href = '/login';
-                }
+                };
             } catch (err) {
                 alert(err);
             }

@@ -39,8 +39,9 @@ actionsRouter.get('/logout', (req, res) => {
 });
 
 actionsRouter.get('/login', (req, res) => {
-    if (typeof req.session.username == 'undefined')
+    if (typeof req.session.username == 'undefined') {
         res.sendFile(path.join(__filename, '../../pages/log_in_page.html'));
+    }
     else {
         res.redirect('/actions');
         res.end();
@@ -58,7 +59,7 @@ actionsRouter.post('/login', (req, res) => {
                 console.log(`Success log in: ${req.session.username.userType}`);
                 res.end();
             } else {
-                res.status(404).send(JSON.stringify("Wrong password for user: admin"));
+                res.status(404).send(JSON.stringify("Неправильный пароль для пользователя: admin"));
             }
         } else {
             con.query(`SELECT * FROM student WHERE login='${req.body.username}' AND password='${req.body.password}'`,
@@ -87,7 +88,7 @@ actionsRouter.post('/login', (req, res) => {
                                             console.log(`Success log in: ${result2[0].login}`);
                                             res.end();
                                         } else {
-                                            res.status(404).send(JSON.stringify("Wrong login or password"));
+                                            res.status(404).send(JSON.stringify("Неправильный логин или пароль"));
                                         }
                                     }
                                 }
@@ -98,7 +99,7 @@ actionsRouter.post('/login', (req, res) => {
             );
         }
     } else {
-        res.status(404).send(JSON.stringify("Undefined login or password"));
+        res.status(404).send(JSON.stringify("Не введены логин или пароль"));
     }
 });
 
@@ -134,8 +135,6 @@ actionsRouter.post('/add/student', (req, res) => {
                         console.error(err1);
                         res.status(500).send(JSON.stringify("Copy of existing student"));
                     } else {
-                        console.log(`Success added student: ${log}`);
-
                         con.query(`SELECT studentId FROM student WHERE login='${log}'`,
                             function (err2, result) {
                                 if (err2)
@@ -150,10 +149,10 @@ actionsRouter.post('/add/student', (req, res) => {
                 }
             );
         } else {
-            res.status(500).send(JSON.stringify("Copy of existing admin"));
+            res.status(500).send(JSON.stringify("Копия имеющегося админа"));
         }
     } else {
-        res.status(404).send(JSON.stringify("Undefined firstName or secondName or group"));
+        res.status(404).send(JSON.stringify("Не введены имя, фамилия или группа"));
     }
 });
 
@@ -176,8 +175,9 @@ actionsRouter.get('/students/all.json', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.status(200).send(JSON.stringify(result));
+                        res.end();
                     } else {
-                        res.status(404).send(JSON.stringify(`Not found students`));
+                        res.status(404).send(JSON.stringify(`Не найдены студенты`));
                     }
                 }
             }
@@ -199,8 +199,9 @@ actionsRouter.post('/students', (req, res) => {
                         } else {
                             if (typeof result[0] != 'undefined') {
                                 res.status(200).send(JSON.stringify(result));
+                                res.end();
                             } else {
-                                res.status(404).send(JSON.stringify(`Not found students`));
+                                res.status(404).send(JSON.stringify(`Не найдены студенты`));
                             }
                         }
                     }
@@ -213,8 +214,9 @@ actionsRouter.post('/students', (req, res) => {
                         } else {
                             if (typeof result[0] != 'undefined') {
                                 res.status(200).send(JSON.stringify(result));
+                                res.end();
                             } else {
-                                res.status(404).send(JSON.stringify(`Not found students`));
+                                res.status(404).send(JSON.stringify(`Не найдены студенты`));
                             }
                         }
                     }
@@ -229,8 +231,9 @@ actionsRouter.post('/students', (req, res) => {
                         } else {
                             if (typeof result[0] != 'undefined') {
                                 res.status(200).send(JSON.stringify(result));
+                                res.end();
                             } else {
-                                res.status(404).send(JSON.stringify(`Not found students`));
+                                res.status(404).send(JSON.stringify(`Не найдены студенты`));
                             }
                         }
                     }
@@ -243,8 +246,9 @@ actionsRouter.post('/students', (req, res) => {
                         } else {
                             if (typeof result[0] != 'undefined') {
                                 res.status(200).send(JSON.stringify(result));
+                                res.end();
                             } else {
-                                res.status(404).send(JSON.stringify(`Not found students`));
+                                res.status(404).send(JSON.stringify(`Не найдены студенты`));
                             }
                         }
                     }
@@ -261,8 +265,9 @@ actionsRouter.post('/students', (req, res) => {
                         } else {
                             if (typeof result[0] != 'undefined') {
                                 res.status(200).send(JSON.stringify(result));
+                                res.end();
                             } else {
-                                res.status(404).send(JSON.stringify(`Not found students`));
+                                res.status(404).send(JSON.stringify(`Не найдены студенты`));
                             }
                         }
                     }
@@ -275,8 +280,9 @@ actionsRouter.post('/students', (req, res) => {
                         } else {
                             if (typeof result[0] != 'undefined') {
                                 res.status(200).send(JSON.stringify(result));
+                                res.end();
                             } else {
-                                res.status(404).send(JSON.stringify(`Not found students`));
+                                res.status(404).send(JSON.stringify(`Не найдены студенты`));
                             }
                         }
                     }
@@ -291,14 +297,15 @@ actionsRouter.post('/students', (req, res) => {
                         } else {
                             if (typeof result[0] != 'undefined') {
                                 res.status(200).send(JSON.stringify(result));
+                                res.end();
                             } else {
-                                res.status(404).send(JSON.stringify(`Not found students`));
+                                res.status(404).send(JSON.stringify(`Не найдены студенты`));
                             }
                         }
                     }
                 );
             } else {
-                res.status(404).send(JSON.stringify("Undefined firstName and secondName and group"));
+                res.status(404).send(JSON.stringify("Не введены имя, фамилия или группа"));
             }
         }
     }
@@ -323,10 +330,8 @@ actionsRouter.post('/add/professor', (req, res) => {
                 function (err1) {
                     if (err1) {
                         console.error(err1);
-                        res.status(500).send(JSON.stringify("Copy of existing professor"));
+                        res.status(500).send(JSON.stringify("Копия имеющегося профессора"));
                     } else {
-                        console.log(`Success added professor: ${log}`);
-
                         con.query(`SELECT professorId FROM professor WHERE login='${log}'`,
                             function (err2, result) {
                                 if (err2)
@@ -341,10 +346,10 @@ actionsRouter.post('/add/professor', (req, res) => {
                 }
             );
         } else {
-            res.status(500).send(JSON.stringify("Copy of existing admin"));
+            res.status(500).send(JSON.stringify("Копия имеющегося админа"));
         }
     } else {
-        res.status(404).send(JSON.stringify("Undefined firstName or secondName"));
+        res.status(404).send(JSON.stringify("Не введены имя или фамилия"));
     }
 });
 
@@ -367,8 +372,9 @@ actionsRouter.get('/professors/all.json', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.status(200).send(JSON.stringify(result));
+                        res.end();
                     } else {
-                        res.status(404).send(JSON.stringify(`Not found professors`));
+                        res.status(404).send(JSON.stringify(`Не найдены профессора`));
                     }
                 }
             }
@@ -389,8 +395,9 @@ actionsRouter.post('/professors', (req, res) => {
                     } else {
                         if (typeof result[0] != 'undefined') {
                             res.status(200).send(JSON.stringify(result));
+                            res.end();
                         } else {
-                            res.status(404).send(JSON.stringify(`Not found professors`));
+                            res.status(404).send(JSON.stringify(`Не найдены профессора`));
                         }
                     }
                 }
@@ -403,8 +410,9 @@ actionsRouter.post('/professors', (req, res) => {
                     } else {
                         if (typeof result[0] != 'undefined') {
                             res.status(200).send(JSON.stringify(result));
+                            res.end();
                         } else {
-                            res.status(404).send(JSON.stringify(`Not found professors`));
+                            res.status(404).send(JSON.stringify(`Не найдены профессора`));
                         }
                     }
                 }
@@ -419,14 +427,15 @@ actionsRouter.post('/professors', (req, res) => {
                     } else {
                         if (typeof result[0] != 'undefined') {
                             res.status(200).send(JSON.stringify(result));
+                            res.end();
                         } else {
-                            res.status(404).send(JSON.stringify(`Not found professors`));
+                            res.status(404).send(JSON.stringify(`Не найдены профессора`));
                         }
                     }
                 }
             );
         } else {
-            res.status(404).send(JSON.stringify("Undefined firstName and secondName"));
+            res.status(404).send(JSON.stringify("Не введены имя или фамилия"));
         }
     }
 });

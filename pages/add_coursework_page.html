@@ -2,19 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add courseWork</title>
+    <title>Добавить курсовую работу</title>
     <script>
         "use strict";
-        window.onload = function () {
-            let addCourseWorkButton = document.getElementById('addCourseWorkButton');
-            let inputs = document.getElementsByTagName('input');
-            let logOut = document.getElementById('logOut');
+        window.onload = async function () {
+            try {
+                let loc = window.location.href.split("/");
+                let locId = loc[loc.length - 3];
 
-            let loc = window.location.href.split("/");
-            let locId = loc[loc.length - 3];
+                let response = await fetch(`/session/info.json`);
+                let resText = await response.json();
 
-            addCourseWorkButton.onclick = async function () {
-                try {
+                if (resText.userType === "student") {
+                    window.location.href = `/student/${locId}`;
+                }
+                if (resText.userType === "professor") {
+                    window.location.href = `/student/${locId}`;
+                }
+
+                let inputs = document.getElementsByTagName('input');
+
+                let addCourseWorkButton = document.getElementById('addCourseWorkButton');
+                addCourseWorkButton.onclick = async function () {
                     let courseWorkData = {
                         title: inputs[0].value,
                         year: inputs[1].value,
@@ -28,55 +37,48 @@
                         body: JSON.stringify(courseWorkData)
                     };
 
-                    let response = await fetch(`/student/${locId}/add/coursework`, options);
-                    let resText = await response.json();
+                    response = await fetch(`/student/${locId}/add/coursework`, options);
+                    resText = await response.json();
 
                     if (response.ok)
                         window.location.href = `/student/${locId}`;
                     else
                         alert(resText);
-                } catch (err) {
-                    alert(err);
-                }
-            };
+                };
 
-            logOut.onclick = async function () {
-                try {
-                    await fetch('/logout');
-                    window.location.href = '/login';
-                } catch (err) {
-                    alert(err);
-                }
-            };
+                let backButton = document.getElementById('backButton');
+                backButton.onclick = function () {
+                    window.location.href = `/student/${locId}`;
+                };
+            } catch (err) {
+                alert(err);
+            }
         }
     </script>
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Add courseWork </h2>
+<div align="center" style="margin-top: 100px;">
+    <h2> Добавить курсовую работу </h2>
     <form name="add courseWork">
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="title">Title</label> <input autocomplete="off" autofocus class="text-field" id="title"
-                                                    style="margin-right: 30px" type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="title">Название</label> <input autocomplete="off" autofocus id="title"
+                                                       style="margin-right: 65px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="year">Year</label> <input autocomplete="off" class="text-field" id="year"
-                                                  style="margin-right: 30px" type="number"/>
+        <div style="margin-bottom: 5px">
+            <label for="year">Год</label> <input autocomplete="off" id="year" style="margin-right: 25px" type="number"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="headFirstName">HeadFirstName</label> <input autocomplete="off" class="text-field"
-                                                                    id="headFirstName" style="margin-right: 100px"
-                                                                    type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="headFirstName">Имя руководителя</label> <input autocomplete="off" id="headFirstName"
+                                                                       style="margin-right: 127px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <label for="headSecondName">HeadSecondName</label> <input autocomplete="off" class="text-field"
-                                                                      id="headSecondName" style="margin-right: 117px"
-                                                                      type="text"/>
+        <div style="margin-bottom: 15px">
+            <label for="headSecondName">Фамилия руководителя</label> <input autocomplete="off" id="headSecondName"
+                                                                            style="margin-right: 160px" type="text"/>
         </div>
-        <div class="form-group">
-            <input class="btn btn-lg btn-success" id="addCourseWorkButton" type="button" value="Add"/>
-            <input class="btn btn-lg btn-danger" id="logOut" type="button" value="Log out"/>
+        <div>
+            <input id="backButton" type="button" value="Назад"/>
+            <input id="addCourseWorkButton" type="button" value="Добавить"/>
         </div>
     </form>
 </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CourseWork</title>
+    <title>Курсовая работа</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -11,8 +11,24 @@
                 let locId = loc[loc.length - 3];
                 let locCode = loc[loc.length - 1];
 
-                let response = await fetch(`/student/${locId}/coursework/${locCode}/info.json`);
+                let response = await fetch(`/session/info.json`);
                 let resText = await response.json();
+
+                if (resText.userType === "student") {
+                    document.getElementById("deleteButton").hidden = true;
+                    document.getElementById("addProtectionButton").hidden = true;
+                    document.getElementById("addConsultationButton").hidden = true;
+                }
+
+                if (resText.userType === "professor") {
+                    document.getElementById("addProtectionButton").hidden = true;
+                    document.getElementById("addConsultationButton").hidden = true;
+                    document.getElementById("deleteButton").hidden = true;
+                    document.getElementById("editButton").hidden = true;
+                }
+
+                response = await fetch(`/student/${locId}/coursework/${locCode}/info.json`);
+                resText = await response.json();
 
                 document.getElementById("title").innerText = resText.title;
                 document.getElementById("year").innerText = resText.year;
@@ -37,7 +53,7 @@
                 if (resText.linkToCode !== null && resText.linkToCode !== "" && resText.linkToCode !== "undefined") {
                     document.getElementsByClassName("linkToCode")[0].hidden = false;
                     document.getElementById("linkToCode").value = "Перейти";
-                    document.getElementById("linkToCodeLabel").innerHTML = "Код: " + resText.linkToCode;
+                    document.getElementById("linkToCodeLabel").innerHTML = "Ссылка на код: " + resText.linkToCode;
                     document.getElementById("linkToCode").onclick = function () {
                         window.location.href = `${resText.linkToCode}`;
                     }
@@ -150,16 +166,6 @@
                         alert(err);
                     }
                 };
-
-                let logOutButton = document.getElementById('logOutButton');
-                logOutButton.onclick = async function () {
-                    try {
-                        await fetch('/logout');
-                        window.location.href = '/login';
-                    } catch (err) {
-                        alert(err);
-                    }
-                };
             } catch (err) {
                 alert(err);
             }
@@ -168,54 +174,48 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> CourseWork </h2>
+<div align="center" style="margin-top: 100px">
+    <h2> Курсовая работа </h2>
     <form name="courseWork">
-        <div class="form-group" style="margin-bottom: 5px">
+        <div style="margin-bottom: 5px">
             <label>Название:</label> <label id="title"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label>Год создания:</label> <label id="year"></label>
+        <div style="margin-bottom: 5px">
+            <label>Год:</label> <label id="year"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
+        <div style="margin-bottom: 5px">
             <label>Руководитель:</label> <label id="headFirstName"></label> <label id="headSecondName"></label>
         </div>
         <div class="taskText" hidden style="margin-bottom: 5px">
-            <label id="taskText"></label>
+            <label>ТЗ:</label><label id="taskText"></label>
         </div>
         <div class="isConfirmedTaskText" hidden style="margin-bottom: 5px">
-            <label for="isConfirmedTaskText">IsConfirmedTaskText</label> <input autocomplete="off" class="text-field"
-                                                                                disabled
-                                                                                id="isConfirmedTaskText"
-                                                                                style="margin-right: 285px"
-                                                                                type="checkbox"/>
+            <label for="isConfirmedTaskText">Подтверждение ТЗ</label> <input autocomplete="off" disabled
+                                                                             id="isConfirmedTaskText"
+                                                                             type="checkbox"/>
         </div>
         <div class="currentNote" hidden style="margin-bottom: 5px">
-            <label id="currentNote"></label>
+            <label>Текущая записка:</label><label id="currentNote"></label>
         </div>
         <div class="linkToCode" hidden style="margin-bottom: 5px">
-            <label for="linkToCode" id="linkToCodeLabel"></label> <input autocomplete="off" class="text-field"
-                                                                         id="linkToCode" style="margin-right: 100px"
+            <label for="linkToCode" id="linkToCodeLabel"></label> <input autocomplete="off" id="linkToCode"
                                                                          type="button"/>
         </div>
         <div class="presentation" hidden style="margin-bottom: 5px">
-            <label id="presentation"></label>
+            <label>Презентация:</label><label id="presentation"></label>
         </div>
         <div class="admittanceToProtection" hidden style="margin-bottom: 5px">
-            <label for="admittanceToProtection">AdmittanceToProtection</label> <input autocomplete="off"
-                                                                                      class="text-field"
-                                                                                      disabled
-                                                                                      id="admittanceToProtection"
-                                                                                      style="margin-right: 301px"
-                                                                                      type="checkbox"/>
+            <label for="admittanceToProtection">Разрешение на защиту</label> <input autocomplete="off" disabled
+                                                                                    id="admittanceToProtection"
+                                                                                    type="checkbox"/>
         </div>
         <div class="finalEvaluation" hidden style="margin-bottom: 5px">
-            <label id="finalEvaluation"></label>
+            <label>Оценка:</label><label id="finalEvaluation"></label>
         </div>
         <table bgcolor="#f0f8ff" hidden id="mainProtectionTable" style="text-align:center; margin-bottom: 5px">
             <thead>
             <tr>
-                <th>MainProtection</th>
+                <th>Защита</th>
             </tr>
             </thead>
             <tbody id="mainProtection">
@@ -224,34 +224,33 @@
         <table bgcolor="#f0f8ff" hidden id="protectionsTable" style="text-align:center; margin-bottom: 5px">
             <thead>
             <tr>
-                <th>Protections</th>
+                <th>Предзащиты</th>
             </tr>
             </thead>
             <tbody id="protections">
             </tbody>
         </table>
-        <div class="form-group" style="margin-bottom: 10px">
-            <input class="btn btn-lg btn-success" id="addProtectionButton" type="button" value="Add protection"/>
+        <div style="margin-bottom: 5px">
+            <input id="addProtectionButton" type="button" value="Добавить защиту"/>
         </div>
         <table bgcolor="#f0f8ff" hidden id="consultationsTable" style="text-align:center; margin-bottom: 5px">
             <thead>
             <tr>
-                <th>Consultations</th>
+                <th>Консультации</th>
             </tr>
             </thead>
             <tbody id="consultations">
             </tbody>
         </table>
-        <div class="form-group" style="margin-bottom: 15px">
-            <input class="btn btn-lg btn-success" id="addConsultationButton" type="button" value="Add consultation"/>
+        <div style="margin-bottom: 15px">
+            <input id="addConsultationButton" type="button" value="Добавить консультацию"/>
         </div>
-        <div class="form-group" style="margin-bottom: 10px">
-            <input class="btn btn-lg btn-danger" id="logOutButton" type="button" value="Log out"/>
-            <input class="btn btn-lg btn-danger" id="editButton" type="button" value="Edit"/>
-            <input class="btn btn-lg btn-danger" id="deleteButton" type="button" value="Delete"/>
+        <div style="margin-bottom: 10px">
+            <input id="editButton" type="button" value="Редактировать"/>
+            <input id="deleteButton" type="button" value="Удалить"/>
         </div>
-        <div class="form-group">
-            <input class="btn btn-lg btn-danger" id="backButton" type="button" value="Back"/>
+        <div>
+            <input id="backButton" type="button" value="Назад"/>
         </div>
     </form>
 </div>

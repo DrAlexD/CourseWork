@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Consultation</title>
+    <title>Консультация</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -12,9 +12,21 @@
                 let locCode = loc[loc.length - 3];
                 let locDate = loc[loc.length - 1];
 
-                let response = await fetch(`/student/${locId}/coursework/${locCode}/consultation/${locDate}/info.json`);
+                let response = await fetch(`/session/info.json`);
                 let resText = await response.json();
 
+                if (resText.userType === "student") {
+                    document.getElementById("deleteButton").hidden = true;
+                    document.getElementById("editButton").hidden = true;
+                }
+
+                if (resText.userType === "professor") {
+                    document.getElementById("deleteButton").hidden = true;
+                    document.getElementById("editButton").hidden = true;
+                }
+
+                response = await fetch(`/student/${locId}/coursework/${locCode}/consultation/${locDate}/info.json`);
+                resText = await response.json();
 
                 document.getElementById("date").innerText = (parseInt(resText.date.split("T")[0].split("-")[2]) + 1).toString() +
                     "-" + resText.date.split("T")[0].split("-")[1] + "-" +
@@ -22,7 +34,7 @@
 
                 if (resText.topic !== null && resText.topic !== "" && resText.topic !== "undefined") {
                     document.getElementsByClassName("topic")[0].hidden = false;
-                    //document.getElementById("topic").files = resText.topic;
+                    document.getElementById("topic").innerText = resText.topic;
                 }
 
                 let editButton = document.getElementById('editButton');
@@ -44,16 +56,6 @@
                         alert(err);
                     }
                 };
-
-                let logOutButton = document.getElementById('logOutButton');
-                logOutButton.onclick = async function () {
-                    try {
-                        await fetch('/logout');
-                        window.location.href = '/login';
-                    } catch (err) {
-                        alert(err);
-                    }
-                };
             } catch (err) {
                 alert(err);
             }
@@ -62,22 +64,21 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Consultation </h2>
+<div align="center" style="margin-top: 100px">
+    <h2> Консультация </h2>
     <form name="consultation">
-        <div class="form-group" style="margin-bottom: 5px">
+        <div style="margin-bottom: 5px">
             <label>Дата:</label> <label id="date"></label>
         </div>
-        <div class="topic" hidden style="margin-bottom: 5px">
+        <div class="topic" hidden style="margin-bottom: 15px">
             <label>Тема:</label> <label id="topic"></label>
         </div>
-        <div class="form-group" style="margin-bottom: 10px">
-            <input class="btn btn-lg btn-danger" id="logOutButton" type="button" value="Log out"/>
-            <input class="btn btn-lg btn-danger" id="editButton" type="button" value="Edit"/>
-            <input class="btn btn-lg btn-danger" id="deleteButton" type="button" value="Delete"/>
+        <div style="margin-bottom: 10px">
+            <input id="editButton" type="button" value="Редактировать"/>
+            <input id="deleteButton" type="button" value="Удалить"/>
         </div>
-        <div class="form-group">
-            <input class="btn btn-lg btn-danger" id="backButton" type="button" value="Back"/>
+        <div>
+            <input id="backButton" type="button" value="Назад"/>
         </div>
     </form>
 </div>

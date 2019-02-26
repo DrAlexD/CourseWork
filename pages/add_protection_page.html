@@ -2,24 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add protection</title>
+    <title>Добавить защиту</title>
     <script>
         "use strict";
-        window.onload = function () {
-            let addProtectionButton = document.getElementById('addProtectionButton');
-            let inputs = document.getElementsByTagName('input');
-            let backButton = document.getElementById("backButton");
+        window.onload = async function () {
+            try {
+                let loc = window.location.href.split("/");
+                let locId = loc[loc.length - 5];
+                let locCode = loc[loc.length - 3];
 
-            let loc = window.location.href.split("/");
-            let locId = loc[loc.length - 5];
-            let locCode = loc[loc.length - 3];
+                let response = await fetch(`/session/info.json`);
+                let resText = await response.json();
 
-            backButton.onclick = function () {
-                window.location.href = `/student/${locId}/coursework/${locCode}`;
-            };
+                if (resText.userType === "student") {
+                    window.location.href = `/student/${locId}/coursework/${locCode}`;
+                }
+                if (resText.userType === "professor") {
+                    window.location.href = `/student/${locId}/coursework/${locCode}`;
+                }
 
-            addProtectionButton.onclick = async function () {
-                try {
+                let inputs = document.getElementsByTagName('input');
+
+                let addProtectionButton = document.getElementById('addProtectionButton');
+                addProtectionButton.onclick = async function () {
                     let protectionData = {
                         date: inputs[0].value,
                         isMainProtection: inputs[1].checked
@@ -31,40 +36,41 @@
                         body: JSON.stringify(protectionData)
                     };
 
-                    let response = await fetch(`/student/${locId}/coursework/${locCode}/add/protection`, options);
+                    response = await fetch(`/student/${locId}/coursework/${locCode}/add/protection`, options);
 
                     if (response.ok)
                         window.location.href = `/student/${locId}/coursework/${locCode}`;
                     else {
-                        let resText = await response.json();
+                        resText = await response.json();
                         alert(resText);
                     }
-                } catch (err) {
-                    alert(err);
-                }
-            };
+                };
+
+                let backButton = document.getElementById("backButton");
+                backButton.onclick = function () {
+                    window.location.href = `/student/${locId}/coursework/${locCode}`;
+                };
+            } catch (err) {
+                alert(err);
+            }
         }
     </script>
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Add protection </h2>
+<div align="center" style="margin-top: 100px">
+    <h2> Добавить защиту </h2>
     <form name="add protection">
-        <div class="form-group" style="margin-bottom: 15px">
-            <label for="date">Date</label> <input autocomplete="off" class="text-field" id="date"
-                                                  style="margin-right: 117px" type="date"/>
+        <div style="margin-bottom: 5px">
+            <label for="date">Дата</label> <input autocomplete="off" id="date" style="margin-right: 35px" type="date"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="isMainProtection">IsMainProtection</label> <input autocomplete="off"
-                                                                          class="text-field"
-                                                                          id="isMainProtection"
-                                                                          style="margin-right: 301px"
-                                                                          type="checkbox"/>
+        <div style="margin-bottom: 15px">
+            <label for="isMainProtection">Главная защита</label> <input autocomplete="off" id="isMainProtection"
+                                                                        style="margin-right: 237px" type="checkbox"/>
         </div>
-        <div class="form-group">
-            <input class="btn btn-lg btn-success" id="backButton" type="button" value="Back"/>
-            <input class="btn btn-lg btn-success" id="addProtectionButton" type="button" value="Add"/>
+        <div>
+            <input id="backButton" type="button" value="Назад"/>
+            <input id="addProtectionButton" type="button" value="Добавить"/>
         </div>
     </form>
 </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student</title>
+    <title>Редактировать страницу профессора</title>
     <script>
         "use strict";
         window.onload = async function () {
@@ -10,22 +10,34 @@
                 let loc = window.location.href.split("/");
                 let locId = loc[loc.length - 2];
 
-                let response = await fetch(`/professor/${locId}/info.json`);
+                let response = await fetch(`/session/info.json`);
                 let resText = await response.json();
+
+                if (resText.userType === "student") {
+                    window.location.href = `/student/${resText.userId}`;
+                }
+
+                if (resText.userType === "professor") {
+                    document.getElementById("firstName").disabled = true;
+                    document.getElementById("secondName").disabled = true;
+                }
+
+                response = await fetch(`/professor/${locId}/info.json`);
+                resText = await response.json();
 
                 document.getElementById("firstName").value = resText.firstName;
                 document.getElementById("secondName").value = resText.secondName;
                 document.getElementById("login").value = resText.login;
                 document.getElementById("password").value = resText.password;
 
-                let saveButton = document.getElementById("saveButton");
-                let backButton = document.getElementById("backButton");
                 let inputs = document.getElementsByTagName('input');
 
+                let backButton = document.getElementById("backButton");
                 backButton.onclick = function () {
                     window.location.href = `/professor/${locId}`;
                 };
 
+                let saveButton = document.getElementById("saveButton");
                 saveButton.onclick = async function () {
 
                     let professorData = {
@@ -46,7 +58,7 @@
                     if (response.ok)
                         window.location.href = `/professor/${locId}`;
                     else {
-                        let resText = await response.json();
+                        resText = await response.json();
                         alert(resText);
                     }
                 };
@@ -58,28 +70,28 @@
 </head>
 
 <body>
-<div align="center" class="panel well" style="margin-top: 100px;">
-    <h2> Professor edit </h2>
+<div align="center" style="margin-top: 100px">
+    <h2> Редактировать страницу профессора </h2>
     <form name="professor edit">
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="firstName">FirstName</label> <input autocomplete="off" autofocus class="text-field"
-                                                            id="firstName" style="margin-right: 60px" type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="firstName">Имя</label> <input autocomplete="off" autofocus id="firstName"
+                                                      style="margin-right: 30px" type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <label for="secondName">SecondName</label> <input autocomplete="off" class="text-field" id="secondName"
-                                                              style="margin-right: 78px" type="text"/>
+        <div style="margin-bottom: 10px">
+            <label for="secondName">Фамилия</label> <input autocomplete="off" id="secondName" style="margin-right: 64px"
+                                                           type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="login">Login</label> <input autocomplete="off" class="text-field" id="login"
-                                                    style="margin-right: 31px" type="text"/>
+        <div style="margin-bottom: 5px">
+            <label for="login">Логин</label> <input autocomplete="off" id="login" style="margin-right: 40px"
+                                                    type="text"/>
         </div>
-        <div class="form-group" style="margin-bottom: 5px">
-            <label for="password">Password</label> <input autocomplete="off" class="text-field" id="password"
-                                                          style="margin-right: 53px" type="password"/>
+        <div style="margin-bottom: 15px">
+            <label for="password">Пароль</label> <input autocomplete="off" id="password" style="margin-right:48px"
+                                                        type="password"/>
         </div>
-        <div class="form-group" style="margin-bottom: 15px">
-            <input class="btn btn-lg btn-success" id="backButton" type="button" value="Back"/>
-            <input class="btn btn-lg btn-success" id="saveButton" type="button" value="Save"/>
+        <div>
+            <input id="backButton" type="button" value="Назад"/>
+            <input id="saveButton" type="button" value="Сохранить"/>
         </div>
     </form>
 </div>

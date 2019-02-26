@@ -21,23 +21,21 @@ studentRouter.get('/:id', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.sendFile(path.join(__filename, '../../pages/student_page.html'));
-                        console.log(`Student page, student: ${result[0].login}`);
+                        res.end();
                     } else {
-                        console.log(`Not found student`);
                         res.redirect('/students');
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Student page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
 });
 
 studentRouter.get('/:id/delete', (req, res) => {
-    console.log(`Success deleted student`);
     con.query(`DELETE FROM student WHERE studentId='${req.params.id}'`, err => {
         if (err) console.error(err);
         else res.end();
@@ -53,30 +51,32 @@ studentRouter.get('/:id/edit', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.sendFile(path.join(__filename, '../../pages/student_edit_page.html'));
-                        console.log(`Student_edit page, student: ${result[0].login}`);
+                        res.end();
                     } else {
-                        console.log(`Not found student`);
                         res.redirect('/students');
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Student_edit page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
 });
 
 studentRouter.post('/:id/edit', (req, res) => {
-    console.log(`Success edited student: ${req.body.login}`);
     if (req.body.login !== "") {
-        con.query("UPDATE student SET login" + `='${req.body.login}' WHERE studentId='${req.params.id}'`, err => {
-            if (err) {
-                console.error(err);
-                res.status(500).send(JSON.stringify("Copy of existing student"));
-            }
-        });
+        if (req.body.login === "admin") {
+            res.status(500).send(JSON.stringify("Копия имеющегося админа"));
+        } else {
+            con.query("UPDATE student SET login" + `='${req.body.login}' WHERE studentId='${req.params.id}'`, err => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send(JSON.stringify("Копия имеющегося студента"));
+                }
+            });
+        }
     }
     if (req.body.firstName !== "") {
         con.query("UPDATE student SET firstName" + `='${req.body.firstName}' WHERE studentId='${req.params.id}'`, err => {
@@ -113,13 +113,14 @@ studentRouter.get('/:id/info.json', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.send(JSON.stringify(result[0]));
+                        res.end();
                     } else {
-                        console.log(`Not found student: ${result[0].login}`);
                         res.redirect('/students');
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
         res.redirect('/login');
         res.end();
@@ -135,11 +136,13 @@ studentRouter.get('/:id/courseworks/info.json', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.status(200).send(JSON.stringify(result));
+                        res.end();
                     } else {
-                        res.status(404).send("Not found courseWorks");
+                        res.status(404).send("Не найдены курсовые работы");
                     }
                 }
-            });
+            }
+        );
     } else {
         res.redirect('/login');
         res.end();
@@ -148,10 +151,9 @@ studentRouter.get('/:id/courseworks/info.json', (req, res) => {
 
 studentRouter.get('/:id/add/coursework', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        console.log(`AddCourseWork page, user: ${req.session.username}`);
         res.sendFile(path.join(__filename, '../../pages/add_coursework_page.html'));
+        res.end();
     } else {
-        console.log(`AddCourseWork page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
@@ -164,24 +166,23 @@ studentRouter.post('/:id/add/coursework', (req, res) => {
             function (err1) {
                 if (err1) {
                     console.error(err1);
-                    res.status(500).send(JSON.stringify("Copy of existing courseWork"));
+                    res.status(500).send(JSON.stringify("Копия имеющейся курсовой работы"));
                 } else {
                     con.query(`SELECT * FROM coursework WHERE title='${req.body.title}'`,
                         function (err2, result) {
                             if (err2)
                                 console.error(err2);
                             else {
-                                console.log(`Success added courseWork: ${result[0].title}`);
                                 res.status(200).send(JSON.stringify(result[0].courseWorkId));
                                 res.end();
                             }
-                        });
+                        }
+                    );
                 }
             }
         );
     } else {
-        res.status(404).send(JSON.stringify("Undefined title or year or headFirstName or headSecondName"));
-        console.log("Undefined title or year or headFirstName or headSecondName");
+        res.status(404).send(JSON.stringify("Не введены название, год, имя или фамилия руководителя"));
     }
 });
 
@@ -193,24 +194,22 @@ studentRouter.get('/:id/coursework/:code', (req, res) => {
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        console.log(`CourseWork page, courseWork: ${result[0].title}`);
                         res.sendFile(path.join(__filename, '../../pages/coursework_page.html'));
+                        res.end();
                     } else {
-                        console.log(`Not found courseWork`);
                         res.redirect(`/student/${req.params.id}`);
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`CourseWork page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
 });
 
 studentRouter.get('/:id/coursework/:code/delete', (req, res) => {
-    console.log(`Success deleted courseWork`);
     con.query(`DELETE FROM coursework WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
         if (err) console.error(err);
         else res.end();
@@ -225,29 +224,27 @@ studentRouter.get('/:id/coursework/:code/edit', (req, res) => {
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        console.log(`CourseWork_edit page, courseWork: ${result[0].title}`);
                         res.sendFile(path.join(__filename, '../../pages/coursework_edit_page.html'));
+                        res.end();
                     } else {
-                        console.log(`Not found courseWork`);
                         res.redirect(`/student/${req.params.id}`);
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`CourseWork_edit page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
 });
 
 studentRouter.post('/:id/coursework/:code/edit', (req, res) => {
-    console.log(`Success edited coursework: ${req.body.title}`);
     if (req.body.title !== "") {
         con.query("UPDATE courseWork SET title" + `='${req.body.title}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
             if (err) {
                 console.error(err);
-                res.status(500).send(JSON.stringify("Copy of existing courseWork"));
+                res.status(500).send(JSON.stringify("Копия имеющейся курсовой работы"));
             }
         });
     }
@@ -318,15 +315,15 @@ studentRouter.get('/:id/coursework/:code/info.json', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.send(JSON.stringify(result[0]));
+                        res.end();
                     } else {
-                        console.log(`Not found courseWork`);
                         res.redirect(`/student/${req.params.id}`);
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`CourseWork page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
@@ -341,11 +338,13 @@ studentRouter.get('/:id/coursework/:code/consultations/info.json', (req, res) =>
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.status(200).send(JSON.stringify(result));
+                        res.end();
                     } else {
-                        res.status(404).send("Not found consultations");
+                        res.status(404).send("Не найдены консультации");
                     }
                 }
-            });
+            }
+        );
     } else {
         res.redirect('/login');
         res.end();
@@ -354,10 +353,9 @@ studentRouter.get('/:id/coursework/:code/consultations/info.json', (req, res) =>
 
 studentRouter.get('/:id/coursework/:code/add/consultation', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        console.log(`AddConsultation page, user: ${req.session.username}`);
         res.sendFile(path.join(__filename, '../../pages/add_consultation_page.html'));
+        res.end();
     } else {
-        console.log(`AddConsultation page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
@@ -371,14 +369,12 @@ studentRouter.post('/:id/coursework/:code/add/consultation', (req, res) => {
                 if (err) {
                     console.error(err);
                 } else {
-                    console.log(`Success added consultation: ${req.body.date}`);
                     res.end();
                 }
             }
         );
     } else {
-        res.status(404).send(JSON.stringify("Undefined date"));
-        console.log("Undefined date");
+        res.status(404).send(JSON.stringify("Не введена дата"));
     }
 });
 
@@ -390,24 +386,22 @@ studentRouter.get('/:id/coursework/:code/consultation/:date', (req, res) => {
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        console.log(`Consultation page, consultation: ${req.params.date}`);
                         res.sendFile(path.join(__filename, '../../pages/consultation_page.html'));
+                        res.end();
                     } else {
-                        console.log(`Not found consultation`);
                         res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Consultation page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
 });
 
 studentRouter.get('/:id/coursework/:code/consultation/:date/delete', (req, res) => {
-    console.log(`Success deleted consultation`);
     con.query(`DELETE FROM consultation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
         if (err) console.error(err);
         else res.end();
@@ -422,30 +416,26 @@ studentRouter.get('/:id/coursework/:code/consultation/:date/edit', (req, res) =>
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        console.log(`Consultation_edit page, consultation: ${req.params.date}`);
                         res.sendFile(path.join(__filename, '../../pages/consultation_edit_page.html'));
+                        res.end();
                     } else {
-                        console.log(`Not found consultation`);
                         res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Consultation_edit page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
 });
 
 studentRouter.post('/:id/coursework/:code/consultation/:date/edit', (req, res) => {
-    console.log(`Success edited consultation: ${req.body.date}`);
-
     con.query("UPDATE consultation SET topic" + `='${req.body.topic}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
         if (err) console.error(err);
         else res.end();
     });
-
 });
 
 studentRouter.get('/:id/coursework/:code/consultation/:date/info.json', (req, res) => {
@@ -456,17 +446,16 @@ studentRouter.get('/:id/coursework/:code/consultation/:date/info.json', (req, re
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        console.log(`Consultation page, consultation: ${req.params.date}`);
                         res.send(JSON.stringify(result[0]));
+                        res.end();
                     } else {
-                        console.log(`Not found consultation`);
                         res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Consultation page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
@@ -482,11 +471,13 @@ studentRouter.get('/:id/coursework/:code/protections/info.json', (req, res) => {
                 else {
                     if (typeof result[0] != 'undefined') {
                         res.status(200).send(JSON.stringify(result));
+                        res.end();
                     } else {
-                        res.status(404).send("Not found protections");
+                        res.status(404).send("Не найдены защиты");
                     }
                 }
-            });
+            }
+        );
     } else {
         res.redirect('/login');
         res.end();
@@ -495,10 +486,9 @@ studentRouter.get('/:id/coursework/:code/protections/info.json', (req, res) => {
 
 studentRouter.get('/:id/coursework/:code/add/protection', (req, res) => {
     if (typeof req.session.username != 'undefined') {
-        console.log(`AddProtection page, user: ${req.session.username}`);
         res.sendFile(path.join(__filename, '../../pages/add_protection_page.html'));
+        res.end();
     } else {
-        console.log(`AddProtection page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
@@ -513,14 +503,12 @@ studentRouter.post('/:id/coursework/:code/add/protection', (req, res) => {
                 if (err) {
                     console.error(err);
                 } else {
-                    console.log(`Success added protection: ${req.body.date}`);
                     res.end();
                 }
             }
         );
     } else {
-        res.status(404).send(JSON.stringify("Undefined date"));
-        console.log("Undefined date");
+        res.status(404).send(JSON.stringify("Не введена дата"));
     }
 });
 
@@ -532,24 +520,44 @@ studentRouter.get('/:id/coursework/:code/protection/:date', (req, res) => {
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        console.log(`Protection page, protection: ${req.params.date}`);
                         res.sendFile(path.join(__filename, '../../pages/protection_page.html'));
+                        res.end();
                     } else {
-                        console.log(`Not found protection`);
                         res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Protection page, session is ${req.session.username}`);
+        res.redirect('/login');
+        res.end();
+    }
+});
+
+studentRouter.get('/:id/coursework/:code/protection/:date/evaluations/info.json', (req, res) => {
+    if (typeof req.session.username != 'undefined') {
+        con.query(`SELECT * FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        res.status(200).send(JSON.stringify(result));
+                        res.end();
+                    } else {
+                        res.status(404).send("Не найдены оценки");
+                    }
+                }
+            }
+        );
+    } else {
         res.redirect('/login');
         res.end();
     }
 });
 
 studentRouter.get('/:id/coursework/:code/protection/:date/delete', (req, res) => {
-    console.log(`Success deleted protection`);
     con.query(`DELETE FROM protection WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
         if (err) console.error(err);
         else res.end();
@@ -564,36 +572,79 @@ studentRouter.get('/:id/coursework/:code/protection/:date/edit', (req, res) => {
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        console.log(`Protection_edit page, protection: ${req.params.date}`);
                         res.sendFile(path.join(__filename, '../../pages/protection_edit_page.html'));
+                        res.end();
                     } else {
-                        console.log(`Not found protection`);
                         res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Protection_edit page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
 });
 
 studentRouter.post('/:id/coursework/:code/protection/:date/edit', (req, res) => {
-    console.log(`Success edited protection: ${req.body.date}`);
-
     req.body.isMainProtection = (req.body.isMainProtection) ? 1 : 0;
     con.query("UPDATE protection SET isMainProtection" + `='${req.body.isMainProtection}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
         if (err) console.error(err);
         else res.end();
     });
 
-    if (req.body.finalEvaluation === "") req.body.finalEvaluation = 0;
-    con.query("UPDATE protection SET finalEvaluation" + `='${req.body.finalEvaluation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
-        if (err) console.error(err);
-        else res.end();
-    });
+    if (req.body.evaluation === "") req.body.evaluation = 0;
+    con.query(`SELECT * FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND professorId='${req.session.userId}'`,
+        function (err, result) {
+            if (err)
+                console.error(err);
+            else {
+                if (typeof result[0] != 'undefined') {
+                    if (req.body.evaluation != 0) {
+                        con.query("UPDATE protectionEvaluation SET evaluation" + `='${req.body.evaluation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND professorId='${req.session.userId}'`, err => {
+                            if (err) console.error(err);
+                            else res.end();
+                        });
+                    } else {
+                        con.query(`DELETE FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND professorId='${req.session.userId}'`, err => {
+                            if (err) console.error(err);
+                            else res.end();
+                        });
+                    }
+                } else {
+                    if (req.body.evaluation != 0) {
+                        con.query("INSERT INTO protectionEvaluation (`studentId`, `courseWorkId`, `date`, `professorId`, `evaluation`) " +
+                            `VALUES ('${req.params.id}','${req.params.code}', '${req.params.date}', '${req.session.userId}','${req.body.evaluation}')`, err => {
+                            if (err) console.error(err);
+                            else res.end();
+                        });
+                    }
+                }
+            }
+        }
+    );
+
+
+    con.query(`SELECT * FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+        function (err, result) {
+            if (err)
+                console.error(err);
+            else {
+                if (typeof result[0] != 'undefined') {
+                    let sum = 0;
+                    for (let i = 0; i < result.length; i++) {
+                        sum += result[i].evaluation;
+                    }
+                    let medEval = Math.round(sum / result.length);
+                    con.query("UPDATE protection SET finalEvaluation" + `='${medEval}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+                        if (err) console.error(err);
+                        else res.end();
+                    });
+                }
+            }
+        }
+    );
 });
 
 studentRouter.get('/:id/coursework/:code/protection/:date/info.json', (req, res) => {
@@ -604,17 +655,16 @@ studentRouter.get('/:id/coursework/:code/protection/:date/info.json', (req, res)
                     console.error(err);
                 else {
                     if (typeof result[0] != 'undefined') {
-                        console.log(`Protection page, protection: ${req.params.date}`);
                         res.send(JSON.stringify(result[0]));
+                        res.end();
                     } else {
-                        console.log(`Not found protection`);
                         res.redirect(`/student/${req.params.id}/coursework/${req.params.code}`);
                         res.end();
                     }
                 }
-            });
+            }
+        );
     } else {
-        console.log(`Protection page, session is ${req.session.username}`);
         res.redirect('/login');
         res.end();
     }
