@@ -70,7 +70,7 @@ actionsRouter.post('/login', (req, res) => {
                         if (typeof result[0] != 'undefined') {
                             req.session.username = {
                                 userType: "student",
-                                userId: result[0].studentid
+                                userId: result[0].studentId
                             };
                             console.log(`Success log in: ${result[0].login}`);
                             res.end();
@@ -83,7 +83,7 @@ actionsRouter.post('/login', (req, res) => {
                                         if (typeof result2[0] != 'undefined') {
                                             req.session.username = {
                                                 userType: "professor",
-                                                userId: result2[0].professorid
+                                                userId: result2[0].professorId
                                             };
                                             console.log(`Success log in: ${result2[0].login}`);
                                             res.end();
