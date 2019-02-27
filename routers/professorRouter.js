@@ -73,7 +73,7 @@ professorRouter.post('/:id/edit', (req, res) => {
             con.query("UPDATE professor SET login" + `='${req.body.login}' WHERE professorId='${req.params.id}'`, err => {
                 if (err) {
                     console.error(err);
-                    res.status(500).send(JSON.stringify("Копия имеющегося профессора"));
+                    res.status(500).send(JSON.stringify("Копия имеющегося преподавателя"));
                 }
             });
         }
@@ -144,7 +144,7 @@ professorRouter.get('/:id/courseworks/info.json', (req, res) => {
                             }
                         );
                     } else {
-                        res.status(404).send("Не найден профессор");
+                        res.status(404).send("Не найден преподаватель");
                     }
                 }
             }

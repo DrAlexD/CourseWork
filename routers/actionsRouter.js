@@ -329,7 +329,7 @@ actionsRouter.post('/add/professor', (req, res) => {
                 function (err1) {
                     if (err1) {
                         console.error(err1);
-                        res.status(500).send(JSON.stringify("Копия имеющегося профессора"));
+                        res.status(500).send(JSON.stringify("Копия имеющегося преподавателя"));
                     } else {
                         con.query(`SELECT professorId FROM professor WHERE login='${log}'`,
                             function (err2, result) {
@@ -373,7 +373,7 @@ actionsRouter.get('/professors/all.json', (req, res) => {
                         res.status(200).send(JSON.stringify(result));
                         res.end();
                     } else {
-                        res.status(404).send(JSON.stringify(`Не найдены профессора`));
+                        res.status(404).send(JSON.stringify(`Не найдены преподаватели`));
                     }
                 }
             }
@@ -396,7 +396,7 @@ actionsRouter.post('/professors', (req, res) => {
                             res.status(200).send(JSON.stringify(result));
                             res.end();
                         } else {
-                            res.status(404).send(JSON.stringify(`Не найдены профессора`));
+                            res.status(404).send(JSON.stringify(`Не найдены преподаватели`));
                         }
                     }
                 }
@@ -411,7 +411,7 @@ actionsRouter.post('/professors', (req, res) => {
                             res.status(200).send(JSON.stringify(result));
                             res.end();
                         } else {
-                            res.status(404).send(JSON.stringify(`Не найдены профессора`));
+                            res.status(404).send(JSON.stringify(`Не найдены преподаватели`));
                         }
                     }
                 }
@@ -428,7 +428,7 @@ actionsRouter.post('/professors', (req, res) => {
                             res.status(200).send(JSON.stringify(result));
                             res.end();
                         } else {
-                            res.status(404).send(JSON.stringify(`Не найдены профессора`));
+                            res.status(404).send(JSON.stringify(`Не найдены преподаватели`));
                         }
                     }
                 }

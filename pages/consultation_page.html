@@ -22,7 +22,22 @@
 
                 if (resText.userType === "professor") {
                     document.getElementById("deleteButton").hidden = true;
-                    document.getElementById("editButton").hidden = true;
+                    response = await fetch(`/professor/${resText.userId}/courseworks/info.json`);
+                    if (response.ok) {
+                        resText = await response.json();
+                        let f = false;
+                        for (let i = 0; i < resText.length; i++) {
+                            if (resText[i].courseWorkId == locCode) {
+                                f = true;
+                                break;
+                            }
+                        }
+                        if (!f) {
+                            document.getElementById("editButton").hidden = true;
+                        }
+                    } else {
+                        document.getElementById("editButton").hidden = true;
+                    }
                 }
 
                 response = await fetch(`/student/${locId}/coursework/${locCode}/consultation/${locDate}/info.json`);

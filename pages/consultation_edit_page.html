@@ -20,7 +20,26 @@
                 }
 
                 if (resText.userType === "professor") {
-                    window.location.href = `/student/${locId}/coursework/${locCode}/consultation/${locDate}`;
+                    response = await fetch(`/professor/${resText.userId}/courseworks/info.json`);
+                    if (response.ok) {
+                        resText = await response.json();
+                        let f = false;
+                        for (let i = 0; i < resText.length; i++) {
+                            if (resText[i].courseWorkId == locCode) {
+                                f = true;
+                                break;
+                            }
+                        }
+                        if (!f) {
+                            document.getElementById("topic").disabled = true;
+                        }
+                    } else {
+                        document.getElementById("topic").disabled = true;
+                    }
+                }
+
+                if (resText.userType === "admin") {
+                    document.getElementById("topic").disabled = true;
                 }
 
                 response = await fetch(`/student/${locId}/coursework/${locCode}/consultation/${locDate}/info.json`);
