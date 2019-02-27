@@ -19,8 +19,15 @@
 
                 if (resText.userType === "professor") {
                     document.getElementById("deleteButton").hidden = true;
+                    if (resText.userId != locId) {
+                        document.getElementById("editButton").hidden = true;
+                        document.getElementById("logOutButton").hidden = true;
+                    }
                 }
 
+                if (resText.userType === "admin") {
+                    document.getElementById("logOutButton").hidden = true;
+                }
 
                 response = await fetch(`/professor/${locId}/info.json`);
                 resText = await response.json();

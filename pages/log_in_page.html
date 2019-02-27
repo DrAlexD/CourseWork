@@ -25,7 +25,11 @@
                     let response = await fetch('/login', options);
 
                     if (response.ok) {
-                        window.location.href = '/actions';
+                        response = await fetch(`/session/info.json`);
+                        let resText = await response.json();
+                        if (resText.userType === "student") {
+                            window.location.href = `/student/${resText.userId}`;
+                        } else window.location.href = '/actions';
                     } else {
                         let resText = await response.json();
                         alert(resText);

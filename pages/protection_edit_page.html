@@ -13,22 +13,22 @@
                 let locDate = loc[loc.length - 2];
 
                 let response = await fetch(`/session/info.json`);
-                let resText = await response.json();
+                let resTextProf = await response.json();
 
-                if (resText.userType === "student") {
+                if (resTextProf.userType === "student") {
                     window.location.href = `/student/${locId}/coursework/${locCode}/protection/${locDate}`;
                 }
 
-                if (resText.userType === "professor") {
+                if (resTextProf.userType === "professor") {
                     document.getElementById("isMainProtection").disabled = true;
                 }
 
-                if (resText.userType === "admin") {
+                if (resTextProf.userType === "admin") {
                     document.getElementById("finalEvaluation").disabled = true;
                 }
 
                 response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/info.json`);
-                resText = await response.json();
+                let resText = await response.json();
 
                 document.getElementById("date").innerText = (parseInt(resText.date.split("T")[0].split("-")[2]) + 1).toString() +
                     "-" + resText.date.split("T")[0].split("-")[1] + "-" +
@@ -38,8 +38,13 @@
                     document.getElementById("isMainProtection").checked = (resText.isMainProtection === 1);
                 }
 
-                if (resText.finalEvaluation !== null && resText.finalEvaluation !== 0 && resText.finalEvaluation !== "undefined") {
-                    document.getElementById("finalEvaluation").value = resText.finalEvaluation;
+                response = await fetch(`/student/${locId}/coursework/${locCode}/protection/${locDate}/evaluations/info.json`);
+                if (response.ok) {
+                    resText = await response.json();
+                    for (let i = 0; i < resText.length; i++) {
+                        if (resText[i].professorId === resTextProf.userId)
+                            document.getElementById("finalEvaluation").value = resText[i].evaluation;
+                    }
                 }
 
                 let inputs = document.getElementsByTagName('input');

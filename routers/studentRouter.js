@@ -587,7 +587,7 @@ studentRouter.get('/:id/coursework/:code/protection/:date/edit', (req, res) => {
     }
 });
 
-studentRouter.post('/:id/coursework/:code/protection/:date/edit', (req, res) => {
+studentRouter.post('/:id/coursework/:code/protection/:date/edit', async (req, res) => {
     req.body.isMainProtection = (req.body.isMainProtection) ? 1 : 0;
     con.query("UPDATE protection SET isMainProtection" + `='${req.body.isMainProtection}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
         if (err) console.error(err);
@@ -595,36 +595,46 @@ studentRouter.post('/:id/coursework/:code/protection/:date/edit', (req, res) => 
     });
 
     if (req.body.evaluation === "") req.body.evaluation = 0;
-    con.query(`SELECT * FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND professorId='${req.session.userId}'`,
-        function (err, result) {
-            if (err)
-                console.error(err);
-            else {
-                if (typeof result[0] != 'undefined') {
-                    if (req.body.evaluation != 0) {
-                        con.query("UPDATE protectionEvaluation SET evaluation" + `='${req.body.evaluation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND professorId='${req.session.userId}'`, err => {
-                            if (err) console.error(err);
-                            else res.end();
-                        });
+    await new Promise((resolve) => {
+        con.query(`SELECT * FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND professorId='${req.session.username.userId}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        if (req.body.evaluation != 0) {
+                            con.query("UPDATE protectionEvaluation SET evaluation" + `='${req.body.evaluation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND professorId='${req.session.username.userId}'`, err => {
+                                if (err) console.error(err);
+                                else {
+                                    res.end();
+                                    resolve("ok");
+                                }
+                            });
+                        } else {
+                            con.query(`DELETE FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND professorId='${req.session.username.userId}'`, err => {
+                                if (err) console.error(err);
+                                else {
+                                    res.end();
+                                    resolve("ok");
+                                }
+                            });
+                        }
                     } else {
-                        con.query(`DELETE FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND professorId='${req.session.userId}'`, err => {
-                            if (err) console.error(err);
-                            else res.end();
-                        });
-                    }
-                } else {
-                    if (req.body.evaluation != 0) {
-                        con.query("INSERT INTO protectionEvaluation (`studentId`, `courseWorkId`, `date`, `professorId`, `evaluation`) " +
-                            `VALUES ('${req.params.id}','${req.params.code}', '${req.params.date}', '${req.session.userId}','${req.body.evaluation}')`, err => {
-                            if (err) console.error(err);
-                            else res.end();
-                        });
+                        if (req.body.evaluation != 0) {
+                            con.query("INSERT INTO protectionEvaluation (`studentId`, `courseWorkId`, `date`, `professorId`, `evaluation`) " +
+                                `VALUES ('${req.params.id}','${req.params.code}', '${req.params.date}', '${req.session.username.userId}','${req.body.evaluation}')`, err => {
+                                if (err) console.error(err);
+                                else {
+                                    res.end();
+                                    resolve("ok");
+                                }
+                            });
+                        }
                     }
                 }
             }
-        }
-    );
-
+        );
+    });
 
     con.query(`SELECT * FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
         function (err, result) {
@@ -637,7 +647,13 @@ studentRouter.post('/:id/coursework/:code/protection/:date/edit', (req, res) => 
                         sum += result[i].evaluation;
                     }
                     let medEval = Math.round(sum / result.length);
+
                     con.query("UPDATE protection SET finalEvaluation" + `='${medEval}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+                        if (err) console.error(err);
+                        else res.end();
+                    });
+                } else {
+                    con.query("UPDATE protection SET finalEvaluation" + `='0' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
                         if (err) console.error(err);
                         else res.end();
                     });

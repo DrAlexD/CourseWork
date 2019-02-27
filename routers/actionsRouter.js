@@ -41,8 +41,7 @@ actionsRouter.get('/logout', (req, res) => {
 actionsRouter.get('/login', (req, res) => {
     if (typeof req.session.username == 'undefined') {
         res.sendFile(path.join(__filename, '../../pages/log_in_page.html'));
-    }
-    else {
+    } else {
         res.redirect('/actions');
         res.end();
     }

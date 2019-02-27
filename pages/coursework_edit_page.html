@@ -15,7 +15,7 @@
                 let resText = await response.json();
 
                 if (resText.userType === "student") {
-                    document.getElementById("deleteButton").disabled = true;
+                    document.getElementById("title").disabled = true;
                     document.getElementById("year").disabled = true;
                     document.getElementById("headFirstName").disabled = true;
                     document.getElementById("headSecondName").disabled = true;
@@ -73,15 +73,26 @@
                         year: inputs[1].value,
                         headFirstName: inputs[2].value,
                         headSecondName: inputs[3].value,
-                        taskText: document.getElementById("taskText").files[0],
+                        taskText: null,
                         isConfirmedTaskText: inputs[5].checked,
-                        currentNote: document.getElementById("currentNote").files[0],
+                        currentNote: null,
                         linkToCode: inputs[7].value,
-                        presentation: document.getElementById("presentation").files[0],
+                        presentation: null,
                         admittanceToProtection: inputs[9].checked,
                         finalEvaluation: inputs[10].value
                     };
+                    /*
+                     async function getBase64(file) {
+                         let reader = new FileReader();
+                         reader.onload = function () {
+                             courseWorkData.taskText = reader.result
+                         };
+                         reader.readAsBinaryString(file);
+                     }
 
+                     await getBase64(document.getElementById("taskText").files[0]);
+                     alert(courseWorkData.taskText);
+                     */
                     let options = {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},

@@ -16,13 +16,18 @@
                 if (resText.userType === "student") {
                     document.getElementById("backButton").hidden = true;
                     document.getElementById("deleteButton").hidden = true;
-                    document.getElementById("addCourseWork").hidden = true;
+                    document.getElementById("addCourseWorkButton").hidden = true;
                 }
 
                 if (resText.userType === "professor") {
-                    document.getElementById("addCourseWork").hidden = true;
+                    document.getElementById("addCourseWorkButton").hidden = true;
                     document.getElementById("deleteButton").hidden = true;
                     document.getElementById("editButton").hidden = true;
+                    document.getElementById("logOutButton").hidden = true;
+                }
+
+                if (resText.userType === "admin") {
+                    document.getElementById("logOutButton").hidden = true;
                 }
 
                 response = await fetch(`/student/${locId}/info.json`);
