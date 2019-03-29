@@ -6,6 +6,48 @@
     <script>
         "use strict";
         window.onload = async function () {
+            let readTT;
+            let readCN;
+            let readP;
+
+            function getBase641(file) {
+                let reader1 = new FileReader();
+                reader1.onload = function () {
+                    readTT = reader1.result;
+                    alert(readTT);
+                };
+                reader1.readAsDataURL(file);
+            }
+
+            function getBase642(file) {
+                let reader2 = new FileReader();
+                reader2.onload = function () {
+                    readCN = reader2.result;
+                    alert(readCN);
+                };
+                reader2.readAsDataURL(file);
+            }
+
+            function getBase643(file) {
+                let reader3 = new FileReader();
+                reader3.onload = function () {
+                    readP = reader3.result;
+                    alert(readP);
+                };
+                reader3.readAsDataURL(file);
+            }
+
+            function dataURLtoFile(daturl, filename) {
+                let arr = daturl.split(',');
+                let mime = arr[0].match(/:(.*?);/)[1];
+                let bstr = atob(arr[1]);
+                let n = bstr.length;
+                let u8arr = new Uint8Array(n);
+                while (n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                return new File([u8arr], filename, {type: mime});
+            }
             try {
                 let loc = window.location.href.split("/");
                 let locId = loc[loc.length - 4];
@@ -37,7 +79,8 @@
                 document.getElementById("headSecondName").value = resText.headSecondName;
 
                 if (resText.taskText !== null && resText.taskText !== "" && resText.taskText !== "undefined") {
-                    //document.getElementById("taskText").files = resText.taskText; // =файл?
+                    let dT = new DataTransfer().items.add(dataURLtoFile(resText.taskText, 'taskText.txt'))
+                    document.getElementById("taskText").files = dT.files;
                 }
 
                 if (resText.isConfirmedTaskText !== null) {
@@ -66,6 +109,16 @@
 
                 let inputs = document.getElementsByTagName('input');
 
+                document.getElementById("taskText").addEventListener("change", function () {
+                    getBase641(document.getElementById("taskText").files[0]);
+                });
+                document.getElementById("currentNote").addEventListener("change", function () {
+                    getBase642(document.getElementById("currentNote").files[0]);
+                });
+                document.getElementById("presentation").addEventListener("change", function () {
+                    getBase643(document.getElementById("presentation").files[0]);
+                });
+
                 let saveButton = document.getElementById("saveButton");
                 saveButton.onclick = async function () {
                     let courseWorkData = {
@@ -73,26 +126,14 @@
                         year: inputs[1].value,
                         headFirstName: inputs[2].value,
                         headSecondName: inputs[3].value,
-                        taskText: null,
+                        taskText: readTT,
                         isConfirmedTaskText: inputs[5].checked,
-                        currentNote: null,
+                        currentNote: readCN,
                         linkToCode: inputs[7].value,
-                        presentation: null,
+                        presentation: readP,
                         admittanceToProtection: inputs[9].checked,
                         finalEvaluation: inputs[10].value
                     };
-                    /*
-                     async function getBase64(file) {
-                         let reader = new FileReader();
-                         reader.onload = function () {
-                             courseWorkData.taskText = reader.result
-                         };
-                         reader.readAsBinaryString(file);
-                     }
-
-                     await getBase64(document.getElementById("taskText").files[0]);
-                     alert(courseWorkData.taskText);
-                     */
                     let options = {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -100,7 +141,6 @@
                     };
 
                     response = await fetch(`/student/${locId}/coursework/${locCode}/edit`, options);
-
                     if (response.ok)
                         window.location.href = `/student/${locId}/coursework/${locCode}`;
                     else {

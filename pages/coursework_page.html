@@ -6,6 +6,17 @@
     <script>
         "use strict";
         window.onload = async function () {
+            function dataURLtoFile(daturl, filename) {
+                let arr = daturl.split(',');
+                let mime = arr[0].match(/:(.*?);/)[1];
+                let bstr = atob(arr[1]);
+                let n = bstr.length;
+                let u8arr = new Uint8Array(n);
+                while (n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                return new File([u8arr], filename, {type: mime});
+            }
             try {
                 let loc = window.location.href.split("/");
                 let locId = loc[loc.length - 3];
@@ -36,8 +47,9 @@
                 document.getElementById("headSecondName").innerText = resText.headSecondName;
 
                 if (resText.taskText !== null && resText.taskText !== "" && resText.taskText !== "undefined") {
-                    //document.getElementsByClassName("taskText")[0].hidden = false;
-                    //document.getElementById("taskText").files = resText.taskText;
+                    document.getElementsByClassName("taskText")[0].hidden = false;
+                    let dT = new DataTransfer().items.add(dataURLtoFile(resText.taskText, 'taskText.txt'))
+                    document.getElementById("taskText").files = dT.files;
                 }
 
                 if (resText.isConfirmedTaskText !== null && resText.isConfirmedTaskText !== 0) {
