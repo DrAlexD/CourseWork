@@ -14,7 +14,6 @@
                 let reader1 = new FileReader();
                 reader1.onload = function () {
                     readTT = reader1.result;
-                    alert(readTT);
                 };
                 reader1.readAsDataURL(file);
             }
@@ -23,7 +22,6 @@
                 let reader2 = new FileReader();
                 reader2.onload = function () {
                     readCN = reader2.result;
-                    alert(readCN);
                 };
                 reader2.readAsDataURL(file);
             }
@@ -32,21 +30,8 @@
                 let reader3 = new FileReader();
                 reader3.onload = function () {
                     readP = reader3.result;
-                    alert(readP);
                 };
                 reader3.readAsDataURL(file);
-            }
-
-            function dataURLtoFile(daturl, filename) {
-                let arr = daturl.split(',');
-                let mime = arr[0].match(/:(.*?);/)[1];
-                let bstr = atob(arr[1]);
-                let n = bstr.length;
-                let u8arr = new Uint8Array(n);
-                while (n--) {
-                    u8arr[n] = bstr.charCodeAt(n);
-                }
-                return new File([u8arr], filename, {type: mime});
             }
             try {
                 let loc = window.location.href.split("/");
@@ -78,25 +63,12 @@
                 document.getElementById("headFirstName").value = resText.headFirstName;
                 document.getElementById("headSecondName").value = resText.headSecondName;
 
-                if (resText.taskText !== null && resText.taskText !== "" && resText.taskText !== "undefined") {
-                    let dT = new DataTransfer().items.add(dataURLtoFile(resText.taskText, 'taskText.txt'))
-                    document.getElementById("taskText").files = dT.files;
-                }
-
                 if (resText.isConfirmedTaskText !== null) {
                     document.getElementById("isConfirmedTaskText").checked = (resText.isConfirmedTaskText === 1);
                 }
 
-                if (resText.currentNote !== null && resText.currentNote !== "" && resText.currentNote !== "undefined") {
-                    //document.getElementById("currentNote").files = resText.currentNote;  // =файл?
-                }
-
                 if (resText.linkToCode !== null && resText.linkToCode !== "" && resText.linkToCode !== "undefined") {
                     document.getElementById("linkToCode").value = resText.linkToCode;
-                }
-
-                if (resText.presentation !== null && resText.presentation !== "" && resText.presentation !== "undefined") {
-                    //document.getElementById("presentation").files = resText.presentation;  // =файл?
                 }
 
                 if (resText.admittanceToProtection !== null) {

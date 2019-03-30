@@ -267,32 +267,36 @@ studentRouter.post('/:id/coursework/:code/edit', (req, res) => {
         });
     }
 
-    con.query("UPDATE courseWork SET taskText" + `='${req.body.taskText}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
-        if (err) console.error(err);
-        else res.end();
-    });
-
+    if (req.body.taskText !== null && req.body.taskText !== "" && typeof req.body.taskText != 'undefined') {
+        con.query("UPDATE courseWork SET taskText" + `='${req.body.taskText}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
     req.body.isConfirmedTaskText = (req.body.isConfirmedTaskText) ? 1 : 0;
     con.query("UPDATE courseWork SET isConfirmedTaskText" + `='${req.body.isConfirmedTaskText}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
         if (err) console.error(err);
         else res.end();
     });
 
-    con.query("UPDATE courseWork SET currentNote" + `='${req.body.currentNote}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
-        if (err) console.error(err);
-        else res.end();
-    });
+    if (req.body.currentNote !== null && req.body.currentNote !== "" && typeof req.body.currentNote != 'undefined') {
+        con.query("UPDATE courseWork SET currentNote" + `='${req.body.currentNote}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
 
     con.query("UPDATE courseWork SET linkToCode" + `='${req.body.linkToCode}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
         if (err) console.error(err);
         else res.end();
     });
 
-    con.query("UPDATE courseWork SET presentation" + `='${req.body.presentation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
-        if (err) console.error(err);
-        else res.end();
-    });
-
+    if (req.body.presentation !== null && req.body.presentation !== "" && typeof req.body.presentation != 'undefined') {
+        con.query("UPDATE courseWork SET presentation" + `='${req.body.presentation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
+            if (err) console.error(err);
+            else res.end();
+        });
+    }
     req.body.admittanceToProtection = (req.body.admittanceToProtection) ? 1 : 0;
     con.query("UPDATE courseWork SET admittanceToProtection" + `='${req.body.admittanceToProtection}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
         if (err) console.error(err);
@@ -636,24 +640,52 @@ studentRouter.post('/:id/coursework/:code/protection/:date/edit', async (req, re
         );
     });
 
-    con.query(`SELECT * FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+    await new Promise((resolve) => {
+        con.query(`SELECT * FROM protectionEvaluation WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`,
+            function (err, result) {
+                if (err)
+                    console.error(err);
+                else {
+                    if (typeof result[0] != 'undefined') {
+                        let sum = 0;
+                        for (let i = 0; i < result.length; i++) {
+                            sum += result[i].evaluation;
+                        }
+                        let medEval = Math.round(sum / result.length);
+
+                        con.query("UPDATE protection SET finalEvaluation" + `='${medEval}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+                            if (err) console.error(err);
+                            else {
+                                res.end();
+                                resolve("ok");
+                            }
+                        });
+                    } else {
+                        con.query("UPDATE protection SET finalEvaluation" + `='0' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+                            if (err) console.error(err);
+                            else {
+                                res.end();
+                                resolve("ok");
+                            }
+                        });
+                    }
+                }
+            }
+        );
+    });
+
+    con.query(`SELECT finalEvaluation FROM protection WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}' AND isMainProtection='1'`,
         function (err, result) {
             if (err)
                 console.error(err);
             else {
                 if (typeof result[0] != 'undefined') {
-                    let sum = 0;
-                    for (let i = 0; i < result.length; i++) {
-                        sum += result[i].evaluation;
-                    }
-                    let medEval = Math.round(sum / result.length);
-
-                    con.query("UPDATE protection SET finalEvaluation" + `='${medEval}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+                    con.query("UPDATE courseWork SET finalEvaluation" + `='${result[0].finalEvaluation}' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
                         if (err) console.error(err);
                         else res.end();
                     });
                 } else {
-                    con.query("UPDATE protection SET finalEvaluation" + `='0' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}' AND date='${req.params.date}'`, err => {
+                    con.query("UPDATE courseWork SET finalEvaluation" + `='0' WHERE studentId='${req.params.id}' AND courseWorkId='${req.params.code}'`, err => {
                         if (err) console.error(err);
                         else res.end();
                     });

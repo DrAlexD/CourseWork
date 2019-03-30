@@ -48,8 +48,16 @@
 
                 if (resText.taskText !== null && resText.taskText !== "" && resText.taskText !== "undefined") {
                     document.getElementsByClassName("taskText")[0].hidden = false;
-                    let dT = new DataTransfer().items.add(dataURLtoFile(resText.taskText, 'taskText.txt'))
-                    document.getElementById("taskText").files = dT.files;
+                    let filename = 'taskText.pdf';
+                    let file = dataURLtoFile(resText.taskText, filename);
+                    if (window.navigator.msSaveOrOpenBlob)
+                        window.navigator.msSaveOrOpenBlob(file, filename);
+                    else {
+                        let a = document.getElementById("taskText");
+                        a.href = URL.createObjectURL(file);
+                        a.download = filename;
+                        a.innerText = filename;
+                    }
                 }
 
                 if (resText.isConfirmedTaskText !== null && resText.isConfirmedTaskText !== 0) {
@@ -58,22 +66,37 @@
                 }
 
                 if (resText.currentNote !== null && resText.currentNote !== "" && resText.currentNote !== "undefined") {
-                    //document.getElementsByClassName("currentNote")[0].hidden = false;
-                    //document.getElementById("currentNote").files = resText.currentNote;
+                    document.getElementsByClassName("currentNote")[0].hidden = false;
+                    let filename = 'currentNote.pdf';
+                    let file = dataURLtoFile(resText.currentNote, filename);
+                    if (window.navigator.msSaveOrOpenBlob)
+                        window.navigator.msSaveOrOpenBlob(file, filename);
+                    else {
+                        let a = document.getElementById("currentNote");
+                        a.href = URL.createObjectURL(file);
+                        a.download = filename;
+                        a.innerText = filename;
+                    }
                 }
 
                 if (resText.linkToCode !== null && resText.linkToCode !== "" && resText.linkToCode !== "undefined") {
                     document.getElementsByClassName("linkToCode")[0].hidden = false;
-                    document.getElementById("linkToCode").value = "Перейти";
-                    document.getElementById("linkToCodeLabel").innerHTML = "Ссылка на код: " + resText.linkToCode;
-                    document.getElementById("linkToCode").onclick = function () {
-                        window.location.href = `${resText.linkToCode}`;
-                    }
+                    document.getElementById("linkToCode").href = resText.linkToCode;
+                    document.getElementById("linkToCode").innerText = resText.linkToCode;
                 }
 
                 if (resText.presentation !== null && resText.presentation !== "" && resText.presentation !== "undefined") {
-                    //document.getElementsByClassName("presentation")[0].hidden = false;
-                    //document.getElementById("presentation").files = resText.presentation;
+                    document.getElementsByClassName("presentation")[0].hidden = false;
+                    let filename = 'presentation.pptx';
+                    let file = dataURLtoFile(resText.presentation, filename);
+                    if (window.navigator.msSaveOrOpenBlob)
+                        window.navigator.msSaveOrOpenBlob(file, filename);
+                    else {
+                        let a = document.getElementById("presentation");
+                        a.href = URL.createObjectURL(file);
+                        a.download = filename;
+                        a.innerText = filename;
+                    }
                 }
 
                 if (resText.admittanceToProtection !== null && resText.admittanceToProtection !== 0) {
@@ -199,7 +222,7 @@
             <label>Руководитель:</label> <label id="headFirstName"></label> <label id="headSecondName"></label>
         </div>
         <div class="taskText" hidden style="margin-bottom: 5px">
-            <label>ТЗ:</label><label id="taskText"></label>
+            <label>ТЗ: </label><a id="taskText"></a>
         </div>
         <div class="isConfirmedTaskText" hidden style="margin-bottom: 5px">
             <label for="isConfirmedTaskText">Подтверждение ТЗ</label> <input autocomplete="off" disabled
@@ -207,14 +230,13 @@
                                                                              type="checkbox"/>
         </div>
         <div class="currentNote" hidden style="margin-bottom: 5px">
-            <label>Текущая записка:</label><label id="currentNote"></label>
+            <label>Текущая записка: </label><a id="currentNote"></a>
         </div>
         <div class="linkToCode" hidden style="margin-bottom: 5px">
-            <label for="linkToCode" id="linkToCodeLabel"></label> <input autocomplete="off" id="linkToCode"
-                                                                         type="button"/>
+            <label>Ссылка на код: </label> <a id="linkToCode"></a>
         </div>
         <div class="presentation" hidden style="margin-bottom: 5px">
-            <label>Презентация:</label><label id="presentation"></label>
+            <label>Презентация: </label><a id="presentation"></a>
         </div>
         <div class="admittanceToProtection" hidden style="margin-bottom: 5px">
             <label for="admittanceToProtection">Разрешение на защиту</label> <input autocomplete="off" disabled
@@ -222,7 +244,7 @@
                                                                                     type="checkbox"/>
         </div>
         <div class="finalEvaluation" hidden style="margin-bottom: 5px">
-            <label>Оценка:</label><label id="finalEvaluation"></label>
+            <label>Оценка: </label><label id="finalEvaluation"></label>
         </div>
         <table bgcolor="#f0f8ff" hidden id="mainProtectionTable" style="text-align:center; margin-bottom: 5px">
             <thead>
